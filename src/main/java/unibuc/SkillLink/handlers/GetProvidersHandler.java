@@ -8,7 +8,6 @@ import unibuc.SkillLink.models.Provider;
 import unibuc.SkillLink.repositories.ProvidersRepository;
 
 import java.util.List;
-import java.util.Set;
 
 @Component
 public class GetProvidersHandler implements IHandler<GetProvidersCommand, List<Provider>> {

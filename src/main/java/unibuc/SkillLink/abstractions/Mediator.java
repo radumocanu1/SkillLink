@@ -1,6 +1,5 @@
 package unibuc.SkillLink.abstractions;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.ParameterizedType;
@@ -13,7 +12,6 @@ public class Mediator implements IMediator {
 
     private final Map<Class<? extends ICommand<?>>, IHandler<?, ?>> handlers = new HashMap<>();
 
-    @Autowired
     public Mediator(List<IHandler<?, ?>> handlerList) {
         for (IHandler<?, ?> handler : handlerList) {
             Class<?> commandType = (Class<?>) ((ParameterizedType) handler.getClass()
