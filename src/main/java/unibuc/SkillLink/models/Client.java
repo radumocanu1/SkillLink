@@ -1,15 +1,16 @@
 package unibuc.SkillLink.models;
 
 import jakarta.persistence.*;
+import lombok.EqualsAndHashCode;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+@EqualsAndHashCode(callSuper = true)
 @Entity
-public class Client {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID id;
+@Table(name = "clients")
+public class Client extends BaseModel<UUID> {
     @ManyToMany
-    Set<Provider> providers;
+    Set<Provider> providers = new HashSet<>();
 }
