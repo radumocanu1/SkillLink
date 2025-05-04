@@ -11,6 +11,8 @@ import java.util.UUID;
 @Entity
 @Table(name = "clients")
 public class Client extends BaseModel<UUID> {
+    String firstName;
+    String lastName;
     @ManyToMany
     Set<Provider> providers = new HashSet<>();
 }
