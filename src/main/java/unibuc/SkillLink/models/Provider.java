@@ -17,6 +17,10 @@ import java.util.UUID;
 public class Provider extends BaseModel<UUID> {
     String firstName;
     String lastName;
-    @ManyToMany
-    Set<Client> client = new HashSet<>();
+    @ManyToMany(mappedBy = "providers")
+    Set<Client> clients = new HashSet<>();
+
+    public void addClient(Client client) {
+        clients.add(client);
+    }
 }

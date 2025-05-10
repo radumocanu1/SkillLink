@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Register as Client</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 2rem;
+        }
+        form {
+            max-width: 400px;
+            margin: auto;
+        }
+        label {
+            display: block;
+            margin-top: 1rem;
+        }
+        input[type="text"], button {
+            width: 100%;
+            padding: 0.5rem;
+            margin-top: 0.25rem;
+        }
+        button {
+            margin-top: 1.5rem;
+            background-color: #004466;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #006699;
+        }
+    </style>
+</head>
+<body>
+
+<h2 style="text-align: center;">Register as a Client</h2>
+
+<form th:action="@{/provider}" method="post">
+    <label for="firstName">First Name</label>
+    <input type="text" id="firstName" name="firstName" required>
+
+    <label for="lastName">Last Name</label>
+    <input type="text" id="lastName" name="lastName" required>
+
+    <button type="submit">Submit</button>
+</form>
+
+</body>
+</html>
