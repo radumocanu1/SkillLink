@@ -16,6 +16,11 @@ public class ProvidersController {
     @Autowired
     IMediator mediator;
 
+    @GetMapping("/provider/create")
+    public String getCreateProvider(Model model) {
+        return "provider/create";
+    }
+
     @GetMapping("/providers")
     public String getAllProviders(@RequestParam(name="name", required=false, defaultValue="World") String name, Model model) {
         var providers = mediator.handle(new GetProvidersCommand());
