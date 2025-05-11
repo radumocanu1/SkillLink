@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <style>
+        body {
+            background: #f3f4f6;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            max-width: 400px;
+            margin: 8% auto;
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+        }
+        h2 { text-align: center; }
+        input[type="text"], input[type="password"] {
+            width: 100%; padding: 10px; margin: 10px 0;
+            border-radius: 6px; border: 1px solid #ccc;
+        }
+        button {
+            width: 100%; padding: 10px;
+            background-color: #3498db; color: white;
+            border: none; border-radius: 6px;
+            font-size: 16px;
+        }
+        .links {
+            text-align: center;
+            margin-top: 15px;
+        }
+        .links a {
+            margin: 0 10px;
+            color: #3498db;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Login</h2>
+    <form th:action="@{/login}" method="post">
+        <input type="text" name="username" placeholder="Username" required/>
+        <input type="password" name="password" placeholder="Password" required/>
+        <button type="submit">Login</button>
+    </form>
+    <div class="links">
+        <a th:href="@{/signup/client}">Sign Up as Client</a> |
+        <a th:href="@{/signup/provider}">Sign Up as Provider</a>
+    </div>
+</div>
+</body>
+</html>
