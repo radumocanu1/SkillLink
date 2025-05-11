@@ -1,8 +1,8 @@
 package unibuc.SkillLink.models;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -11,15 +11,29 @@ import java.util.UUID;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "clients")
-@Data
-public class Client extends BaseModel<UUID> {
+@NoArgsConstructor
+@AllArgsConstructor
+public class Client extends BaseModel<UUID> implements AppUser {
+    @Getter
+    @Setter
     String firstName;
+    @Getter
+    @Setter
     String lastName;
+    @Getter
+    String username;
+
     @ManyToMany
+    @JsonManagedReference
+    @Getter
     @JoinTable(
             name = "clients_providers",
             joinColumns = @JoinColumn(name = "client_id"),
             inverseJoinColumns = @JoinColumn(name = "provider_id")
     )
     Set<Provider> providers = new HashSet<>();
+
+    public void addProvider(Provider p) {
+        providers.add(p);
+    }
 }

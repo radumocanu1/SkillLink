@@ -4,11 +4,14 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 import unibuc.SkillLink.models.Client;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
 public interface ClientsRepository extends CrudRepository<Client, UUID> {
     @Override
     List<Client> findAll();
+
+    Optional<Client> findByUsername(String username);
 
 }

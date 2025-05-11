@@ -1,0 +1,49 @@
+package unibuc.SkillLink.controllers;
+
+import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import unibuc.SkillLink.abstractions.IMediator;
+import unibuc.SkillLink.commands.RegisterCommand;
+
+@Controller
+public class AuthController {
+
+    @Autowired
+    IMediator mediator;
+
+    @GetMapping("/login")
+    public String login() {
+        return "auth/login";
+    }
+
+    @GetMapping("/signup/client")
+    public String signupClient(Model model) {
+        model.addAttribute("userType", "client");
+        return "auth/signup";
+    }
+
+    @GetMapping("/signup/provider")
+    public String signupProvider(Model model) {
+        model.addAttribute("userType", "provider");
+        return "auth/signup";
+    }
+
+    @PostMapping("/signup")
+    @Transactional
+    public String processSignup(@RequestParam String username,
+                                @RequestParam String password,
+                                @RequestParam String firstName,
+                                @RequestParam String lastName,
+                                @RequestParam String userType) {
+
+        mediator.handle(new RegisterCommand(
+                username, password, firstName, lastName, userType
+        ));
+        return "redirect:/login?success";
+    }
+}

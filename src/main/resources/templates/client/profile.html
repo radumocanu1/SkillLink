@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f7fc;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .profile-container {
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 60%;
+            padding: 30px;
+            text-align: center;
+        }
+
+        h2 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+
+        .form-group button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .form-group button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .provider-list {
+            margin-top: 30px;
+            text-align: left;
+        }
+
+        .provider-item {
+            padding: 10px;
+            background-color: #f9f9f9;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .provider-item a {
+            text-decoration: none;
+            color: #007BFF;
+            font-size: 1.1rem;
+        }
+
+        .add-provider-btn {
+            background-color: #007BFF;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .add-provider-btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="profile-container">
+    <h2>Client Profile</h2>
+
+    <form th:action="@{'/client/' + ${client.id}}" method="post">
+        <!-- Simulează metoda PUT -->
+        <input type="hidden" name="_method" value="put" />
+
+        <div class="form-group">
+            <label for="firstNameField">First Name</label>
+            <input type="text" name="firstName" th:value="${client.firstName}" disabled id="firstNameField" />
+        </div>
+
+        <div class="form-group">
+            <label for="lastNameField">Last Name</label>
+            <input type="text" name="lastName" th:value="${client.lastName}" disabled id="lastNameField" />
+        </div>
+
+        <div class="form-group">
+            <button type="button" onclick="enableFields()">Edit</button>
+            <button type="submit" id="saveBtn" disabled>Save Edits</button>
+        </div>
+    </form>
+
+    <div class="provider-list">
+        <h3>Providers Associated with You:</h3>
+        <div th:each="provider : ${client.providers}">
+            <div class="provider-item">
+                <a th:href="@{'/provider/' + ${provider.id}}"
+                   th:text="${provider.firstName} + ' ' + ${provider.lastName}">Provider Name</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Activează câmpurile pentru editare
+    function enableFields() {
+        document.getElementById('firstNameField').disabled = false;
+        document.getElementById('lastNameField').disabled = false;
+        document.getElementById('saveBtn').disabled = false;
+    }
+</script>
+
+</body>
+</html>

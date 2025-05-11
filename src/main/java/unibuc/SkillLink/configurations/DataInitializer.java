@@ -4,6 +4,7 @@ import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import unibuc.SkillLink.models.Provider;
@@ -16,6 +17,9 @@ import java.util.List;
 @Component
 public class DataInitializer implements CommandLineRunner
 {
+    @Value("${run.db.seed}")
+    private boolean db_seed = true;
+
     @Autowired
     private ProvidersRepository providersRepository;
 
@@ -23,8 +27,7 @@ public class DataInitializer implements CommandLineRunner
     @Transactional
     public void run(String... args){
         long count = providersRepository.count();
-
-        if (count == 0) {
+        if (count == 0 && db_seed) {
             insertProvidersInitialData();
         }
     }
