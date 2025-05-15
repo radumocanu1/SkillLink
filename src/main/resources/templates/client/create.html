@@ -1,11 +1,14 @@
 <!-- src/main/resources/templates/client/create.html -->
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout}">
 <head>
     <title>Create Client</title>
     <meta charset="UTF-8">
 </head>
 <body>
+<section layout:fragment="content">
+
 <h2>Create New Client</h2>
 
 <form th:action="@{/client/create}" th:object="${client}" method="post">
@@ -23,6 +26,6 @@
         <button type="submit">Create</button>
     </div>
 </form>
-
+</section>
 </body>
 </html>

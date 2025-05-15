@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout}">
 <head>
   <meta charset="UTF-8">
   <title>Not Found</title>
@@ -19,10 +20,14 @@
   </style>
 </head>
 <body>
+<section layout:fragment="content">
+
 <div class="container">
   <h1>404 - Not Found</h1>
   <p>The <strong th:text="${entityName}">Entity</strong> with ID <strong th:text="${id}">ID</strong> could not be found.</p>
   <a href="/" style="color: #337ab7;">Go back home</a>
 </div>
+</section>
+
 </body>
 </html>

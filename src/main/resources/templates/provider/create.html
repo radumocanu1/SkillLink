@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout}">
 <head>
     <meta charset="UTF-8">
     <title>Register as Client</title>
@@ -34,6 +35,8 @@
     </style>
 </head>
 <body>
+<section layout:fragment="content">
+
 
 <h2 style="text-align: center;">Register as a Client</h2>
 
@@ -46,6 +49,6 @@
 
     <button type="submit">Submit</button>
 </form>
-
+</section>
 </body>
 </html>

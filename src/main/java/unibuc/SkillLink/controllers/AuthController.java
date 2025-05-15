@@ -2,11 +2,13 @@ package unibuc.SkillLink.controllers;
 
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import unibuc.SkillLink.abstractions.IMediator;
 import unibuc.SkillLink.commands.RegisterCommand;
 
@@ -45,5 +47,11 @@ public class AuthController {
                 username, password, firstName, lastName, userType
         ));
         return "redirect:/login?success";
+    }
+
+    @GetMapping("/authenticated")
+    @ResponseBody
+    public Boolean isAuthenticated(Authentication authentication) {
+        return authentication != null && authentication.isAuthenticated();
     }
 }

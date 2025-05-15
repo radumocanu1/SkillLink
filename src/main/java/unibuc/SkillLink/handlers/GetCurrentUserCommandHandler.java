@@ -1,6 +1,7 @@
 package unibuc.SkillLink.handlers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 import unibuc.SkillLink.abstractions.IHandler;
@@ -11,9 +12,10 @@ import unibuc.SkillLink.commands.providers.GetProviderCommand;
 import unibuc.SkillLink.models.AppUser;
 
 @Component
-public class GetUserCommandHandler implements IHandler<GetCurrentUserCommand, AppUser>{
+public class GetCurrentUserCommandHandler implements IHandler<GetCurrentUserCommand, AppUser>{
 
     @Autowired
+    @Lazy
     IMediator mediator;
 
     @Override
