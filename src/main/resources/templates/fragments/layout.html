@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="UTF-8">
+<!--    <title th:replace="${title}">SkillLink</title>-->
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<!-- Navbar comun -->
+<header th:replace="fragments/navbar :: navbar"></header>
+
+<!-- Conținut specific fiecărei pagini -->
+<main layout:fragment="content"></main>
+
+<footer>
+    <p style="text-align: center;">&copy; 2025 SkillLink. All rights reserved.</p>
+</footer>
+
+</body>
+</html>

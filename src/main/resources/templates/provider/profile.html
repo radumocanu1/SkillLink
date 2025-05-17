@@ -1,30 +1,231 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout}">
 <head>
+
     <meta charset="UTF-8">
-    <title>Edit Provider</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f7fc;
+            margin: 0;
+            padding: 0;
+        }
+
+        .profile-container {
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 60%;
+            padding: 30px;
+            text-align: center;
+        }
+
+        h2 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+
+        .form-group button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .form-group button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .delete-btn {
+            background-color:red;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        .provider-list {
+            margin-top: 30px;
+            text-align: left;
+        }
+
+        .provider-item {
+            padding: 10px;
+            background-color: #f9f9f9;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .provider-item a {
+            text-decoration: none;
+            color: #007BFF;
+            font-size: 1.1rem;
+        }
+
+        .add-provider-btn {
+            background-color: #007BFF;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .add-provider-btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+    </style>
 </head>
 <body>
-<h2>Provider</h2>
+<section layout:fragment="content">
 
-<form th:action="@{'/provider/' + ${provider.id}}" method="post">
-    <!-- Simulează metoda PUT -->
-    <input type="hidden" name="_method" value="put" />
+    <div class="profile-container">
+        <h2>Profile</h2>
 
-    <input type="text" name="firstName" th:value="${provider.firstName}" disabled id="firstNameField" />
-    <input type="text" name="lastName" th:value="${provider.lastName}" disabled id="lastNameField" />
+        <form th:action="@{'/provider/' + ${user.id}}" method="post">
+            <input type="hidden" name="_method" value="put" />
+            <input type="hidden" name="username" th:value="${user.username}" />
 
-    <button type="button" onclick="enableFields()">Edit</button>
-    <button type="submit" id="saveBtn" disabled>Save Edits</button>
-</form>
+            <div class="form-group">
+                <label for="firstNameField">First Name</label>
+                <input type="text" name="firstName" th:value="${user.firstName}" disabled id="firstNameField" />
+            </div>
 
-<script>
-    function enableFields() {
-        document.getElementById('firstNameField').disabled = false;
-        document.getElementById('lastNameField').disabled = false;
-        document.getElementById('saveBtn').disabled = false;
-    }
-</script>
+            <div class="form-group">
+                <label for="lastNameField">Last Name</label>
+                <input type="text" name="lastName" th:value="${user.lastName}" disabled id="lastNameField" />
+            </div>
 
+            <div class="form-group">
+                <button type="button" onclick="enableFields()">Edit</button>
+                <button type="submit" id="saveBtn" disabled>Save Edits</button>
+            </div>
+        </form>
+
+        <!-- Delete button form -->
+        <form th:action="@{'/provider/' + ${user.id}}" method="post" onsubmit="return confirm('Are you sure you want to delete your account?');">
+            <input type="hidden" name="_method" value="delete" />
+            <div class="form-group">
+                <button type="submit" class="delete-btn">Delete Account</button>
+            </div>
+        </form>
+
+        <div class="provider-list">
+            <h3>Clients Associated with You:</h3>
+            <div th:each="client : ${user.clients}">
+                <div class="provider-item">
+                    <a th:href="@{'/client/' + ${client.id}}"
+                       th:text="${client.firstName} + ' ' + ${client.lastName}">Client Name</a>
+                </div>
+
+                <a class="add-provider-btn"
+                   th:href="@{/invoice/create(providerId=${user.id}, clientId=${client.id})}">
+                    Create Invoice
+                </a>
+            </div>
+        </div>
+
+        <div class="calendar-section" style="margin-top: 40px; text-align: left;">
+            <h3>Calendar Availability</h3>
+
+            <div th:if="${user.calendar != null and !#lists.isEmpty(user.calendar.slots)}">
+                <ul style="list-style: none; padding: 0;">
+                    <li th:each="slot,iterStat : ${user.calendar.slots}"
+                        style="background:#f9f9f9; margin-bottom: 10px; padding: 10px; border-radius: 5px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+
+                        <!-- Afisare data + zi sapt -->
+                        <strong th:text="${#temporals.format(slot.date, 'dd-MM-yyyy') + ' (' + slot.date.dayOfWeek.name().substring(0,3) + ')'}">Date</strong>
+
+
+                        <!-- Formular edit inline -->
+                        <form th:action="@{/calendar}" method="post" style="display:inline-block; margin-left: 20px;">
+                            <input type="hidden" name="provider.id" th:value="${user.id}" />
+                            <input type="hidden" name="slots[0].id" th:value="${slot.id}" />
+
+                            <input type="time" name="slots[0].startTime" th:value="${slot.startTime}" required />
+                            <input type="time" name="slots[0].endTime" th:value="${slot.endTime}" required />
+
+                            <button type="submit" class="add-provider-btn" style="padding: 5px 10px; font-size: 0.9rem;">Save Edits</button>
+                        </form>
+
+                        <!-- Formular delete -->
+                        <form th:action="@{/calendar/delete}" method="post" style="display:inline-block; margin-left: 10px;"
+                              onsubmit="return confirm('Are you sure you want to delete this slot?');">
+                            <input type="hidden" name="slotId" th:value="${slot.id}" />
+                            <button type="submit" class="delete-btn" style="padding: 5px 10px; font-size: 0.9rem;">Delete</button>
+                        </form>
+                    </li>
+                </ul>
+            </div>
+
+            <div th:if="${user.calendar == null or #lists.isEmpty(user.calendar.slots)}">
+                <p>No availability slots added yet.</p>
+            </div>
+
+            <!-- Formular adăugare slot nou -->
+            <form th:action="@{/calendar}" method="post" style="margin-top: 20px;">
+                <input type="hidden" name="provider.id" th:value="${user.id}" />
+
+                <div class="form-group">
+                    <label for="dateInput">Date:</label>
+                    <input type="date" id="dateInput" name="slots[0].date" required />
+                </div>
+
+                <div class="form-group">
+                    <label for="startTimeInput">Start Time:</label>
+                    <input type="time" id="startTimeInput" name="slots[0].startTime" required />
+                </div>
+
+                <div class="form-group">
+                    <label for="endTimeInput">End Time:</label>
+                    <input type="time" id="endTimeInput" name="slots[0].endTime" required />
+                </div>
+
+                <button type="submit" class="add-provider-btn">Add Availability Slot</button>
+            </form>
+        </div>
+
+
+
+    </div>
+
+    <script>
+        function enableFields() {
+            document.getElementById('firstNameField').disabled = false;
+            document.getElementById('lastNameField').disabled = false;
+            document.getElementById('saveBtn').disabled = false;
+        }
+    </script>
+
+
+</section>
 </body>
 </html>

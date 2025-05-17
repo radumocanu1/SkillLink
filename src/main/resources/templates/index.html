@@ -1,5 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -56,15 +59,8 @@
     </style>
 </head>
 <body>
+<section layout:fragment="content">
 
-<header>
-    <div><strong>SkillLink</strong></div>
-    <nav>
-        <a href="/providers">Providers</a>
-        <a href="/clients">Clients</a>
-        <a href="/login">Sign In</a>
-    </nav>
-</header>
 
 <section class="hero">
     <h1>Connecting clients with independent professionals across the country</h1>
@@ -93,9 +89,6 @@
     </div>
 </section>
 
-<footer>
-    &copy; 2025 SkillLink. All rights reserved.
-</footer>
-
+</section>
 </body>
 </html>

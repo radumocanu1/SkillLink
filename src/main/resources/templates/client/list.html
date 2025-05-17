@@ -1,9 +1,12 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout}">
 <head>
     <title>Client List</title>
 </head>
 <body>
+<section layout:fragment="content">
+
 <h2>All Clients</h2>
 <ul>
     <li th:each="client : ${clients}">
@@ -11,5 +14,6 @@
            th:text="${client.firstName + ' ' + client.lastName}">Client Name</a>
     </li>
 </ul>
+</section>
 </body>
 </html>

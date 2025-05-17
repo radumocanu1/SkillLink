@@ -1,12 +1,14 @@
 package unibuc.SkillLink.models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -23,13 +25,26 @@ public class Provider extends BaseModel<UUID> implements AppUser {
     @Setter
     String lastName;
     @Getter
+    @Setter
     String username;
 
-    @JsonBackReference
-    @ManyToMany(mappedBy = "providers")
+    @Getter
+    @JsonIgnore
+    @ManyToMany(mappedBy = "providers",cascade = CascadeType.ALL)
     Set<Client> clients = new HashSet<>();
 
     public void addClient(Client client) {
         clients.add(client);
     }
+
+    @OneToMany(mappedBy = "provider")
+    @Getter
+    @Setter
+    @JsonIgnore
+    Set<Review> reviews = new HashSet<>();
+
+    @OneToOne(mappedBy = "provider", cascade = CascadeType.ALL)
+    @Getter
+    @Setter
+    private Calendar calendar;
 }

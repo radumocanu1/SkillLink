@@ -1,6 +1,7 @@
 <!-- templates/error.html -->
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout}">
 <head>
     <meta charset="UTF-8">
     <title>Oops! Something went wrong</title>
@@ -53,6 +54,8 @@
     </style>
 </head>
 <body>
+<section layout:fragment="content">
+
 <div class="error-container">
     <div class="error-code" th:text="${status ?: 500}">500</div>
     <div class="error-message" th:text="${error ?: 'Unexpected error'}">Oops! Something went wrong.</div>
@@ -61,5 +64,6 @@
     </div>
     <a href="/" class="btn-home">Go to Home</a>
 </div>
+</section>
 </body>
 </html>

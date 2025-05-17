@@ -1,19 +1,18 @@
 <!DOCTYPE HTML>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Providers List</title>
+
     <style>
         body {
             font-family: 'Arial', sans-serif;
             background-color: #f4f7fc;
             margin: 0;
             padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
         }
 
         .container {
@@ -21,6 +20,7 @@
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             width: 60%;
+            margin: 40px auto;
             padding: 30px;
         }
 
@@ -65,58 +65,30 @@
             background-color: #ccc;
             cursor: not-allowed;
         }
-
     </style>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
+
 <body>
+<section layout:fragment="content">
 
-<div class="container">
-    <h1>Providers List</h1>
+    <div class="container">
+        <h1>Providers List</h1>
 
-    <div class="provider-list">
-        <div th:each="provider : ${providers}">
-            <div class="provider-item">
-                <!-- Numele providerului -->
-                <a th:href="@{'/provider/' + ${provider.id}}"
-                   th:text="${provider.firstName} + ' ' + ${provider.lastName}">Provider Name</a>
+        <div class="provider-list">
+            <div th:each="provider : ${providers}">
+                <div class="provider-item">
+                    <a th:href="@{'/provider/' + ${provider.id}}"
+                       th:text="${provider.firstName} + ' ' + ${provider.lastName}">Provider Name</a>
 
-                <!-- Butonul de adăugare a providerului -->
-                <button th:if="${roles.contains('ROLE_CLIENT')}"
-                        th:data-provider-username="${provider.username}"
-                        th:data-client-username="${authentication.getName()}"
-                        onclick="addProviderToClient(this)"
-                        class="add-provider-btn">
-                    <!--    th:disabled="${provider.clients.contains(provider)}"> -->
-                Add Provider
-            </button>
+
+                </div>
+            </div>
         </div>
     </div>
-</div>
-</div>
 
 
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-    function addProviderToClient(button) {
-        const clientUsername = button.getAttribute('data-client-username');
-        const providerUsername = button.getAttribute('data-provider-username');
-        console.log(providerUsername)
 
-        fetch(`/provider/add?clientUsername=${clientUsername}&providerUsername=${providerUsername}`, {
-            method: 'POST'
-        })
-            .then(response => {
-                if (response.ok) {
-                    location.reload();
-                } else {
-                    alert("Error adding provider.");
-                }
-            });
-    }
-
-    window.addProviderToClient = addProviderToClient;
-});
-</script>
-
+</section>
 </body>
 </html>

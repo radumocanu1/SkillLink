@@ -1,5 +1,6 @@
 package unibuc.SkillLink.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
@@ -21,10 +22,11 @@ public class Client extends BaseModel<UUID> implements AppUser {
     @Setter
     String lastName;
     @Getter
+    @Setter
     String username;
 
     @ManyToMany
-    @JsonManagedReference
+    @JsonIgnore
     @Getter
     @JoinTable(
             name = "clients_providers",

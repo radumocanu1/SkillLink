@@ -27,7 +27,7 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login", "/signup/**", "/css/**").permitAll()
+                        .requestMatchers("/","/index","/login", "/signup/**", "/css/**","/authenticated").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
@@ -35,7 +35,11 @@ public class SecurityConfig {
                         .defaultSuccessUrl("/", true)
                         .permitAll()
                 )
-                .logout(LogoutConfigurer::permitAll);
+
+                .logout(logout -> logout
+                    .logoutUrl("/logout")
+                    .logoutSuccessUrl("/")
+                    .permitAll());
 
         return http.build();
     }
