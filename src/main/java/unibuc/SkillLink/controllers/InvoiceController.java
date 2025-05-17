@@ -56,12 +56,12 @@ public class InvoiceController {
         return "invoice/show";
     }
 
-    @PostMapping("/invoice/{id}")
-    public String editInvoice(@ModelAttribute Invoice invoice, Model model) {
-        var createdInvoice = mediator.handle(new CreateInvoiceCommand(invoice));
-        model.addAttribute("invoice", createdInvoice);
-        return "invoice/show";
-    }
+//    @PostMapping("/invoice/{id}")
+//    public String editInvoice(@ModelAttribute Invoice invoice, Model model) {
+//        var createdInvoice = mediator.handle(new CreateInvoiceCommand(invoice));
+//        model.addAttribute("invoice", createdInvoice);
+//        return "invoice/show";
+//    }
 
     @GetMapping("/invoices")
     @SetRoles

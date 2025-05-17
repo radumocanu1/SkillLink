@@ -11,10 +11,7 @@ import unibuc.SkillLink.abstractions.IMediator;
 import unibuc.SkillLink.annotations.SetRoles;
 import unibuc.SkillLink.commands.GetCurrentUserCommand;
 import unibuc.SkillLink.commands.providers.*;
-import unibuc.SkillLink.models.AppUser;
-import unibuc.SkillLink.models.Client;
-import unibuc.SkillLink.models.Provider;
-import unibuc.SkillLink.models.Review;
+import unibuc.SkillLink.models.*;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -67,6 +64,8 @@ public class ProvidersController {
     public String createProvider(@ModelAttribute Provider provider, Model model) {
         var createdProvider = mediator.handle(new CreateProviderCommand(provider));
         model.addAttribute("provider", createdProvider);
+        model.addAttribute("newSlot", new AvailabilitySlot());
+
         return "/profile";
     }
 

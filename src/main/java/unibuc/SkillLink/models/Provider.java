@@ -30,7 +30,7 @@ public class Provider extends BaseModel<UUID> implements AppUser {
 
     @Getter
     @JsonIgnore
-    @ManyToMany(mappedBy = "providers")
+    @ManyToMany(mappedBy = "providers",cascade = CascadeType.ALL)
     Set<Client> clients = new HashSet<>();
 
     public void addClient(Client client) {
@@ -42,4 +42,9 @@ public class Provider extends BaseModel<UUID> implements AppUser {
     @Setter
     @JsonIgnore
     Set<Review> reviews = new HashSet<>();
+
+    @OneToOne(mappedBy = "provider", cascade = CascadeType.ALL)
+    @Getter
+    @Setter
+    private Calendar calendar;
 }
