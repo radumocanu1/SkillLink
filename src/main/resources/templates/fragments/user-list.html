@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<!-- User List Component for displaying associated users -->
+<div th:fragment="user-list(users, userType, showInvoiceButton)">
+    <style>
+        .list-section {
+            margin-top: 2rem;
+            padding: 1rem;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+            transition: background-color 0.2s;
+        }
+        .list-item:hover {
+            background-color: #f8f9fa;
+        }
+        .list-item-user {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .list-item-picture {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            overflow: hidden;
+            background: #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .list-item-picture img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .list-item-picture-placeholder {
+            color: #6c757d;
+            font-size: 1.2rem;
+        }
+    </style>
+
+    <div class="list-section">
+        <h3 th:if="${userType == 'provider'}">Clients Associated with You:</h3>
+        <h3 th:if="${userType == 'client'}">Providers Associated with You:</h3>
+
+        <div th:if="${users != null and !users.isEmpty()}">
+            <!-- For providers showing their clients -->
+            <div th:if="${userType == 'provider'}" th:each="client : ${users}">
+                <div class="list-item">
+                    <div class="list-item-user">
+                        <!-- Small profile picture -->
+                        <div class="list-item-picture">
+                            <img th:if="${client.profilePicture != null}" 
+                                 th:src="@{'/profile-pictures/' + ${client.profilePicture}}"
+                                 alt="Profile Picture" />
+                            <div th:if="${client.profilePicture == null}" class="list-item-picture-placeholder">
+                                <i class="fas fa-user"></i>
+                            </div>
+                        </div>
+
+                        <a th:href="@{'/client/' + ${client.id}}"
+                           th:text="${client.firstName} + ' ' + ${client.lastName}">User Name</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- For clients showing their providers -->
+            <div th:if="${userType == 'client'}" th:each="provider : ${users}">
+                <div class="list-item">
+                    <div class="list-item-user">
+                        <!-- Small profile picture -->
+                        <div class="list-item-picture">
+                            <img th:if="${provider.profilePicture != null}" 
+                                 th:src="@{'/profile-pictures/' + ${provider.profilePicture}}"
+                                 alt="Profile Picture" />
+                            <div th:if="${provider.profilePicture == null}" class="list-item-picture-placeholder">
+                                <i class="fas fa-user"></i>
+                            </div>
+                        </div>
+
+                        <a th:href="@{'/provider/' + ${provider.id}}"
+                           th:text="${provider.firstName} + ' ' + ${provider.lastName}">User Name</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div th:if="${users == null or users.isEmpty()}" class="empty-list-message">
+            <p th:if="${userType == 'provider'}">You don't have any clients yet.</p>
+            <p th:if="${userType == 'client'}">You don't have any providers yet.</p>
+        </div>
+    </div>
+</div>
+</body>
+</html>

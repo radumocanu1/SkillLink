@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<!-- Profile Picture Component -->
+<div th:fragment="profile-picture(user, userType)">
+    <div class="profile-picture-container">
+        <div class="profile-picture">
+            <!-- If user has a profile picture, display it -->
+            <img th:if="${user.profilePicture != null}" 
+                 th:src="@{'/profile-pictures/' + ${user.profilePicture}}"
+                 alt="Profile Picture" />
+            
+            <!-- If no profile picture, show placeholder -->
+            <div th:if="${user.profilePicture == null}" class="profile-picture-placeholder">
+                <i class="fas fa-user"></i>
+            </div>
+        </div>
+        
+        <!-- Edit profile picture button -->
+        <div class="profile-picture-actions" onclick="openProfilePictureModal()">
+            <i class="fas fa-camera"></i>
+        </div>
+    </div>
+    
+    <!-- Profile Picture Upload Modal -->
+    <div id="profilePictureModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Update Profile Picture</h3>
+                <span class="close-modal" onclick="closeProfilePictureModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form th:action="@{'/' + ${userType} + '/profile-picture/' + ${user.id}}" 
+                      method="post" 
+                      enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="profilePictureFile">Choose a new profile picture</label>
+                        <input type="file" id="profilePictureFile" name="profilePicture" 
+                               class="form-control" accept="image/*" required />
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn" onclick="closeProfilePictureModal()">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Upload</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Delete Profile Picture Form -->
+    <form th:if="${user.profilePicture != null}" 
+          th:action="@{'/' + ${userType} + '/profile-picture/' + ${user.id}}" 
+          method="post" 
+          style="display: none;" 
+          id="deleteProfilePictureForm">
+        <input type="hidden" name="_method" value="delete" />
+    </form>
+    
+    <!-- JavaScript for modal functionality -->
+    <script>
+        function openProfilePictureModal() {
+            document.getElementById('profilePictureModal').style.display = 'block';
+        }
+        
+        function closeProfilePictureModal() {
+            document.getElementById('profilePictureModal').style.display = 'none';
+        }
+        
+        function deleteProfilePicture() {
+            if (confirm('Are you sure you want to delete your profile picture?')) {
+                document.getElementById('deleteProfilePictureForm').submit();
+            }
+        }
+        
+        // Close modal when clicking outside of it
+        window.onclick = function(event) {
+            const modal = document.getElementById('profilePictureModal');
+            if (event.target == modal) {
+                closeProfilePictureModal();
+            }
+        }
+    </script>
+</div>
+</body>
+</html>

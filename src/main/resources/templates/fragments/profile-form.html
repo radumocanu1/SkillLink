@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <style>
+        .rate-section {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .rate-input-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+        .rate-input {
+            width: 120px;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        .rate-input:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 0 3px rgba(0,123,255,0.25);
+            outline: none;
+        }
+        .currency-symbol {
+            font-size: 1.2rem;
+            color: #495057;
+        }
+        .rate-save-btn {
+            background-color: #28a745;
+            color: white;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+        .rate-save-btn:hover {
+            background-color: #218838;
+            transform: translateY(-1px);
+        }
+        .rate-save-btn:active {
+            transform: translateY(0);
+        }
+        .rate-save-btn i {
+            font-size: 0.9rem;
+        }
+        .rate-feedback {
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            display: none;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .rate-feedback.success {
+            color: #28a745;
+        }
+        .rate-feedback.error {
+            color: #dc3545;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+    </style>
+</head>
+<body>
+<!-- Profile Form Component -->
+<div th:fragment="profile-form(user, userType)">
+    <div class="form-section">
+        <h3>Personal Information</h3>
+        
+        <form th:action="@{'/' + ${userType} + '/' + ${user.id}}" method="post">
+            <input type="hidden" name="_method" value="put" />
+            <input type="hidden" name="username" th:value="${user.username}" />
+            <input type="hidden" name="id" th:value="${user.id}" />
+            
+            <div class="form-group">
+                <label for="firstNameField">First Name</label>
+                <input type="text" name="firstName" th:value="${user.firstName}" 
+                       disabled id="firstNameField" class="form-control" />
+            </div>
+            
+            <div class="form-group">
+                <label for="lastNameField">Last Name</label>
+                <input type="text" name="lastName" th:value="${user.lastName}" 
+                       disabled id="lastNameField" class="form-control" />
+            </div>
+            
+            <div class="btn-group">
+                <button type="button" onclick="enableFields()" class="btn btn-primary">Edit</button>
+                <button type="submit" id="saveBtn" disabled class="btn btn-success">Save Changes</button>
+            </div>
+        </form>
+    </div>
+    
+    <!-- Professional Rate Section (Only for providers) -->
+    <div class="rate-section" th:if="${userType == 'provider'}">
+        <h3>
+            <i class="fas fa-dollar-sign"></i>
+            Professional Rate
+        </h3>
+        <p class="text-muted">Set your hourly rate for professional services</p>
+        
+        <form th:action="@{'/provider/' + ${user.id} + '/rate'}" 
+              method="post" 
+              id="rateForm" 
+              onsubmit="return updateRate(event)">
+            <div class="rate-input-group">
+                <span class="currency-symbol">$</span>
+                <input type="number" 
+                       id="rateInput" 
+                       name="rate" 
+                       th:value="${user.rate}" 
+                       class="rate-input" 
+                       min="0" 
+                       step="0.01" 
+                       required />
+                <span class="text-muted">/hour</span>
+            </div>
+            
+            <button type="submit" class="rate-save-btn">
+                <i class="fas fa-save"></i>
+                Update Rate
+            </button>
+            
+            <div id="rateFeedback" class="rate-feedback">
+                <i class="fas"></i>
+                <span></span>
+            </div>
+        </form>
+    </div>
+    
+    <!-- Delete Account Form -->
+    <div class="form-section">
+        <h3>Account Management</h3>
+        
+        <form th:action="@{'/' + ${userType} + '/' + ${user.id}}" method="post" 
+              onsubmit="return confirm('Are you sure you want to delete your account? This action cannot be undone.');">
+            <input type="hidden" name="_method" value="delete" />
+            <div class="form-group">
+                <button type="submit" class="btn btn-danger">Delete Account</button>
+            </div>
+        </form>
+    </div>
+    
+    <!-- JavaScript for form functionality -->
+    <script>
+        function enableFields() {
+            document.getElementById('firstNameField').disabled = false;
+            document.getElementById('lastNameField').disabled = false;
+            document.getElementById('saveBtn').disabled = false;
+        }
+
+        function updateRate(event) {
+            event.preventDefault();
+            const form = event.target;
+            const rate = document.getElementById('rateInput').value;
+            const feedback = document.getElementById('rateFeedback');
+            
+            fetch(form.action, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ rate: parseFloat(rate) })
+            })
+            .then(response => {
+                feedback.style.display = 'flex';
+                feedback.style.animation = 'fadeIn 0.3s ease';
+                
+                if (response.ok) {
+                    feedback.className = 'rate-feedback success';
+                    feedback.querySelector('i').className = 'fas fa-check-circle';
+                    feedback.querySelector('span').textContent = 'Rate updated successfully!';
+                } else {
+                    throw new Error('Failed to update rate');
+                }
+            })
+            .catch(error => {
+                feedback.style.display = 'flex';
+                feedback.className = 'rate-feedback error';
+                feedback.querySelector('i').className = 'fas fa-exclamation-circle';
+                feedback.querySelector('span').textContent = 'Failed to update rate. Please try again.';
+                feedback.style.animation = 'shake 0.5s ease';
+            });
+            
+            return false;
+        }
+    </script>
+</div>
+</body>
+</html>

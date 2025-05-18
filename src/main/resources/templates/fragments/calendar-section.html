@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<!-- Calendar Section Component -->
+<div th:fragment="calendar-section(calendar, providerId)">
+    <div class="calendar-section">
+        <h3>Calendar Availability</h3>
+        
+        <!-- Display existing availability slots -->
+        <div th:if="${calendar != null and !#lists.isEmpty(calendar.slots)}">
+            <div th:each="slot : ${calendar.slots}" class="slot-item">
+                <div class="slot-date">
+                    <strong th:text="${#temporals.format(slot.date, 'dd-MM-yyyy') + ' (' + slot.date.dayOfWeek.name().substring(0,3) + ')'}">Date</strong>
+                </div>
+                
+                <div class="slot-time">
+                    <!-- Edit form for slot -->
+                    <form th:action="@{/calendar}" method="post" class="slot-edit-form">
+                        <input type="hidden" name="provider.id" th:value="${providerId}" />
+                        <input type="hidden" name="slots[0].id" th:value="${slot.id}" />
+                        
+                        <div class="time-inputs">
+                            <input type="time" name="slots[0].startTime" th:value="${slot.startTime}" required class="form-control" />
+                            <span>to</span>
+                            <input type="time" name="slots[0].endTime" th:value="${slot.endTime}" required class="form-control" />
+                        </div>
+                        
+                        <div class="slot-actions">
+                            <button type="submit" class="btn btn-primary">Save</button>
+                            
+                            <!-- Delete form for slot -->
+                            <form th:action="@{/calendar/delete}" method="post" style="display:inline-block;"
+                                  onsubmit="return confirm('Are you sure you want to delete this slot?');">
+                                <input type="hidden" name="slotId" th:value="${slot.id}" />
+                                <button type="submit" class="btn btn-danger">Delete</button>
+                            </form>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Empty state message -->
+        <div th:if="${calendar == null or #lists.isEmpty(calendar.slots)}" class="empty-list-message">
+            <p>No availability slots added yet.</p>
+        </div>
+        
+        <!-- Form to add new availability slot -->
+        <div class="form-section">
+            <h3>Add New Availability</h3>
+            
+            <form th:action="@{/calendar}" method="post">
+                <input type="hidden" name="provider.id" th:value="${providerId}" />
+                
+                <div class="form-group">
+                    <label for="dateInput">Date</label>
+                    <input type="date" id="dateInput" name="slots[0].date" required class="form-control" />
+                </div>
+                
+                <div class="form-group">
+                    <label for="startTimeInput">Start Time</label>
+                    <input type="time" id="startTimeInput" name="slots[0].startTime" required class="form-control" />
+                </div>
+                
+                <div class="form-group">
+                    <label for="endTimeInput">End Time</label>
+                    <input type="time" id="endTimeInput" name="slots[0].endTime" required class="form-control" />
+                </div>
+                
+                <button type="submit" class="btn btn-success">Add Availability Slot</button>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>
