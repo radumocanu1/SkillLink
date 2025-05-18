@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <title>Create New Ad</title>
+    <style>
+        .create-ad-container {
+            max-width: 800px;
+            margin: 3rem auto;
+            padding: 2rem;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-header {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .form-header h2 {
+            font-size: 2rem;
+            color: #1a1f36;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-header p {
+            color: #697386;
+            font-size: 1.1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #1a1f36;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #e3e8ee;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.2s;
+            background: #f7fafc;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #6772e5;
+            box-shadow: 0 0 0 1px #6772e5;
+            background: #fff;
+        }
+
+        .form-control.is-invalid {
+            border-color: #dc3545;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='%23dc3545' viewBox='0 0 12 12'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc3545' stroke='none'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right calc(0.375em + 0.1875rem) center;
+            background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+        }
+
+        .invalid-feedback {
+            display: none;
+            color: #dc3545;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+
+        .form-control.is-invalid ~ .invalid-feedback {
+            display: block;
+        }
+
+        .picture-preview {
+            width: 100%;
+            height: 200px;
+            border: 2px dashed #e3e8ee;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .picture-preview img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .picture-preview.empty {
+            cursor: pointer;
+            background: #f7fafc;
+        }
+
+        .picture-preview.empty:hover {
+            border-color: #6772e5;
+            background: #f8f9ff;
+        }
+
+        .picture-preview .upload-icon {
+            font-size: 2rem;
+            color: #697386;
+        }
+
+        .picture-preview .upload-text {
+            color: #697386;
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        .btn-submit {
+            display: inline-block;
+            background: #6772e5;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            width: 100%;
+        }
+
+        .btn-submit:hover {
+            background: #5469d4;
+            transform: translateY(-1px);
+        }
+
+        .btn-submit:disabled {
+            background: #b7b7b7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .rate-input-group {
+            position: relative;
+        }
+
+        .rate-input-group::before {
+            content: "RON";
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #697386;
+        }
+
+        .rate-input-group input {
+            padding-left: 4rem;
+        }
+
+        .rate-input-group::after {
+            content: "/hour";
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #697386;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .shake {
+            animation: shake 0.2s ease-in-out;
+        }
+
+        .error-message {
+            color: #dc3545;
+            background-color: #fdf2f2;
+            border: 1px solid #fde8e8;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="create-ad-container">
+        <div class="form-header">
+            <h2>Create a New Ad</h2>
+            <p>Share your services with potential clients</p>
+        </div>
+
+        <div id="errorMessage" class="error-message"></div>
+
+        <form id="createAdForm" class="needs-validation" novalidate
+              th:data-username="${authentication.name}">
+            <div class="form-group">
+                <label class="form-label" for="title">Title</label>
+                <input type="text" 
+                       class="form-control" 
+                       id="title" 
+                       name="title" 
+                       required
+                       minlength="10" 
+                       maxlength="100"
+                       placeholder="e.g., Professional Web Development Services">
+                <div class="invalid-feedback">
+                    Title must be between 10 and 100 characters.
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="description">Description</label>
+                <textarea class="form-control" 
+                          id="description" 
+                          name="description" 
+                          rows="5" 
+                          required
+                          minlength="50" 
+                          maxlength="5000"
+                          placeholder="Describe your services in detail..."></textarea>
+                <div class="invalid-feedback">
+                    Description must be between 50 and 5000 characters.
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="rate">Rate</label>
+                <div class="rate-input-group">
+                    <input type="number" 
+                           class="form-control" 
+                           id="rate" 
+                           name="rate" 
+                           required
+                           min="0" 
+                           max="1000"
+                           placeholder="100">
+                </div>
+                <div class="invalid-feedback">
+                    Rate must be between 0 and 1000 RON.
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Ad Picture</label>
+                <div class="picture-preview empty" id="picturePreview" onclick="document.getElementById('pictureInput').click()">
+                    <div class="upload-placeholder">
+                        <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                        <div class="upload-text">
+                            Click to upload a picture<br>
+                            <small>or drag and drop</small>
+                        </div>
+                    </div>
+                </div>
+                <input type="file" 
+                       id="pictureInput" 
+                       name="picture" 
+                       accept="image/*"
+                       style="display: none;"
+                       onchange="handlePictureSelect(this)">
+            </div>
+            <input type="hidden" id="username" name="username" th:value="${authentication.getName()}" />
+
+
+            <button type="submit" class="btn-submit">
+                Create Ad
+            </button>
+        </form>
+    </div>
+
+    <script>
+        // Form validation and submission
+        (function () {
+            'use strict'
+            const form = document.getElementById('createAdForm')
+            const errorMessage = document.getElementById('errorMessage')
+            const username = document.getElementById("username").value;
+
+
+
+            form.addEventListener('submit', async (event) => {
+                event.preventDefault()
+                
+                if (!form.checkValidity()) {
+                    event.stopPropagation()
+                    
+                    // Add shake animation to invalid fields
+                    form.querySelectorAll(':invalid').forEach(field => {
+                        field.classList.add('shake')
+                        setTimeout(() => field.classList.remove('shake'), 500)
+                    })
+                    
+                    form.classList.add('was-validated')
+                    return
+                }
+                
+                try {
+                    const pictureInput = form.querySelector('#pictureInput');
+                    let pictureBase64 = null;
+                    
+                    if (pictureInput.files.length > 0) {
+                        const file = pictureInput.files[0];
+                        pictureBase64 = await new Promise((resolve) => {
+                            const reader = new FileReader();
+                            reader.onloadend = () => resolve(reader.result.split(',')[1]);
+                            reader.readAsDataURL(file);
+                        });
+                    }
+                    
+                    // Create the ad data
+                    const adData = {
+                        title: form.querySelector('#title').value,
+                        description: form.querySelector('#description').value,
+                        rate: parseInt(form.querySelector('#rate').value),
+                        picture: pictureBase64
+                    }
+                    
+                    // Send the request
+                    const response = await fetch(`/ads?username=${encodeURIComponent(username)}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(adData)
+                    })
+                    
+                    if (!response.ok) {
+                        throw new Error('Failed to create ad')
+                    }
+                    
+                    // Redirect to the created ad
+                    const result = await response.json()
+                    window.location.href = `/ads/${result.id}`
+                } catch (error) {
+                    errorMessage.textContent = error.message
+                    errorMessage.classList.add('show')
+                }
+            })
+            
+            // Real-time validation
+            form.querySelectorAll('.form-control').forEach(input => {
+                input.addEventListener('input', () => {
+                    if (input.checkValidity()) {
+                        input.classList.remove('is-invalid')
+                    } else {
+                        input.classList.add('is-invalid')
+                    }
+                })
+            })
+        })()
+
+        // Picture preview functionality
+        function handlePictureSelect(input) {
+            const preview = document.getElementById('picturePreview')
+            const file = input.files[0]
+            
+            if (file) {
+                const reader = new FileReader()
+                
+                reader.onload = function(e) {
+                    preview.innerHTML = `<img src="${e.target.result}" alt="Ad Picture">`
+                    preview.classList.remove('empty')
+                }
+                
+                reader.readAsDataURL(file)
+            } else {
+                preview.innerHTML = `
+                    <div class="upload-placeholder">
+                        <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                        <div class="upload-text">
+                            Click to upload a picture<br>
+                            <small>or drag and drop</small>
+                        </div>
+                    </div>
+                `
+                preview.classList.add('empty')
+            }
+        }
+
+        // Drag and drop functionality
+        const dropZone = document.getElementById('picturePreview')
+        
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault()
+            dropZone.classList.add('dragover')
+        })
+        
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('dragover')
+        })
+        
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault()
+            dropZone.classList.remove('dragover')
+            
+            const input = document.getElementById('pictureInput')
+            input.files = e.dataTransfer.files
+            handlePictureSelect(input)
+        })
+    </script>
+</div>
+</body>
+</html> 

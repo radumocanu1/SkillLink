@@ -5,6 +5,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import unibuc.SkillLink.services.AdPictureService;
 import unibuc.SkillLink.services.ProfilePictureService;
 
 @SpringBootApplication(scanBasePackages = {"unibuc.SkillLink"})
@@ -16,9 +17,10 @@ public class SkillLinkApplication {
 	}
 
 	@Bean
-	CommandLineRunner init(ProfilePictureService profilePictureService) {
+	CommandLineRunner init(ProfilePictureService profilePictureService, AdPictureService adPictureService) {
 		return args -> {
 			profilePictureService.init();
+			adPictureService.init();
 		};
 	}
 }

@@ -5,6 +5,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import unibuc.SkillLink.exceptions.ForbiddenException;
 import unibuc.SkillLink.exceptions.NotFoundException;
 import unibuc.SkillLink.exceptions.UsersNotLinkedException;
 
@@ -24,4 +25,10 @@ public class ExceptionMiddleware {
         model.addAttribute("status", HttpStatus.BAD_REQUEST.value());
         return "error";
     }
+    @ResponseStatus(HttpStatus.FORBIDDEN)  // 403
+    @ExceptionHandler(ForbiddenException.class)
+    public String handleForbiddenException() {
+        return "unauthorized";
+    }
+
 }

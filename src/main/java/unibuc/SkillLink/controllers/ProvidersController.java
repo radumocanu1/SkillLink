@@ -13,12 +13,11 @@ import unibuc.SkillLink.abstractions.IMediator;
 import unibuc.SkillLink.annotations.Authorized;
 import unibuc.SkillLink.annotations.SetRoles;
 import unibuc.SkillLink.commands.GetCurrentUserCommand;
-import unibuc.SkillLink.commands.clients.GetClientCommand;
 import unibuc.SkillLink.commands.providers.*;
+import unibuc.SkillLink.exceptions.ForbiddenException;
 import unibuc.SkillLink.models.*;
 
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -94,9 +93,7 @@ public class ProvidersController {
         AppUser currentUser = mediator.handle(new GetCurrentUserCommand(auth));
 
         if (!(currentUser instanceof Provider typeProvider) || !typeProvider.getId().equals(id)) {
-            model.addAttribute("status", 403);
-            model.addAttribute("message", "Operation not permitted");
-            return "error";
+          throw new ForbiddenException();
         }
 
         var editedProvider = mediator.handle(new EditProviderCommand(provider));

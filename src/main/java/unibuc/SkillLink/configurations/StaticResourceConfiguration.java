@@ -14,6 +14,9 @@ public class StaticResourceConfiguration implements WebMvcConfigurer {
     @Value("${profile.pictures.upload.dir:profile-pictures}")
     private String uploadDir;
 
+    @Value("${ad.pictures.upload.dir:ad-pictures}")
+    private String adUploadDir;
+
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         Path uploadPath = Paths.get(uploadDir);
@@ -21,5 +24,12 @@ public class StaticResourceConfiguration implements WebMvcConfigurer {
         
         registry.addResourceHandler("/profile-pictures/**")
                 .addResourceLocations("file:" + uploadAbsolutePath + "/");
+
+        Path adUploadPath = Paths.get(adUploadDir);
+        String adUploadAbsolutePath = adUploadPath.toFile().getAbsolutePath();
+
+
+        registry.addResourceHandler("/ad-pictures/**")
+                .addResourceLocations("file:" + adUploadAbsolutePath + "/");
     }
 }

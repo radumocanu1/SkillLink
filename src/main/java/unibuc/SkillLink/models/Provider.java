@@ -44,8 +44,15 @@ public class Provider extends BaseModel<UUID> implements AppUser {
     @OneToMany(mappedBy = "provider")
     Set<Booking> bookings;
 
+    @OneToMany(mappedBy = "provider")
+    Set<Ad> ads;
+
     @Override
     public Set<Booking> getBookings() {
         return bookings;
+    }
+
+    public void addAd(Ad ad) {
+        ads.add(ad);
     }
 }

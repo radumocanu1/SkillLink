@@ -79,6 +79,27 @@
             padding: 2rem;
             color: #6c757d;
         }
+        .btn-create-ad {
+            background-color: #007bff;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            gap: 0.5rem;
+            transition: background-color 0.2s;
+            margin-bottom: 2rem;
+        }
+        .btn-create-ad:hover {
+            background-color: #0056b3;
+            color: white;
+            text-decoration: none;
+        }
     </style>
 </head>
 <body>
@@ -94,6 +115,12 @@
                 <p th:text="${user.username}">username</p>
             </div>
         </div>
+
+        <!-- Create Ad Button -->
+        <a th:href="@{/ads/create}" class="btn-create-ad">
+            <i class="fas fa-plus"></i>
+            Create New Ad
+        </a>
 
         <!-- Profile Form Component -->
         <div th:replace="fragments/profile-form :: profile-form(${user}, 'provider')"></div>

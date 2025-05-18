@@ -16,7 +16,7 @@ public class EntityUserTypesMappings {
                 return new CreateClientCommand(new Client(firstName,lastName,username, null, new HashSet<>(), new HashSet<>()));
             }
             case PROVIDER -> {
-                return new CreateProviderCommand(new Provider(firstName,lastName,username, 0, null, new HashSet<>(), new HashSet<>(), new HashSet<>()));
+                return new CreateProviderCommand(new Provider(firstName,lastName,username, 0, null, new HashSet<>(), new HashSet<>(), new HashSet<>(), new HashSet<>()));
             }
         }
         throw new IllegalArgumentException("Unknown user type " + userType);

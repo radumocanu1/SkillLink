@@ -8,6 +8,8 @@
         </a>        
         <nav>
             <a id="providers-link" href="/providers" style="display: none;">Providers</a>
+            <a id="ads-link" href="/ads?page=0&size=10" style="display: none;">Ads</a>
+            <a id="my-ads-link" href="/ads/my-ads" style="display: none;">My Ads</a>
             <a id="bookings-link" href="/bookings" style="display: none;">My Bookings</a>
             <a id="invoice-link" href="/invoices" style="display: none;">My invoices</a>
             <a id="profile-link" href="/profile" style="display: none;">My Profile</a>
@@ -32,8 +34,12 @@
                     document.getElementById('invoice-link').style.display = 'inline';
                     if (userRole === 'CLIENT') {
                         document.getElementById('providers-link').style.display = 'inline';
+                        document.getElementById('ads-link').style.display = 'inline';
+                        document.getElementById('my-ads-link').style.display = 'none';
                     } else if (userRole === 'PROVIDER') {
                         document.getElementById('providers-link').style.display = 'none';
+                        document.getElementById('ads-link').style.display = 'none';
+                        document.getElementById('my-ads-link').style.display = 'inline';
                     }
                 }
             })
