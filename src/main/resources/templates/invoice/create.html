@@ -5,22 +5,13 @@
     <meta charset="UTF-8">
     <title>Create Invoice</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #eef1f6;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-
         .invoice-form {
             background-color: #fff;
             padding: 2rem;
             border-radius: 10px;
             box-shadow: 0 8px 16px rgba(0,0,0,0.1);
-            width: 400px;
+            max-width: 600px;
+            margin: 2rem auto;
         }
 
         .invoice-form h2 {
@@ -30,78 +21,187 @@
         }
 
         .form-group {
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-col {
+            flex: 1;
         }
 
         label {
             display: block;
             margin-bottom: 0.5rem;
             color: #555;
+            font-weight: 500;
         }
 
         input[type="text"],
         input[type="number"],
-        input[type="date"] {
+        input[type="date"],
+        textarea {
             width: 100%;
-            padding: 0.6rem;
+            padding: 0.8rem;
             border-radius: 5px;
-            border: 1px solid #ccc;
+            border: 1px solid #ddd;
             font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        input:focus,
+        textarea:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 0 3px rgba(0,123,255,0.1);
+            outline: none;
         }
 
         input[readonly] {
-            background-color: #f0f0f0;
+            background-color: #f8f9fa;
             cursor: not-allowed;
+        }
+
+        .readonly-info {
+            padding: 0.8rem;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            color: #495057;
         }
 
         button {
             width: 100%;
-            padding: 0.7rem;
+            padding: 1rem;
             background-color: #28a745;
             border: none;
             color: white;
             font-size: 1rem;
             border-radius: 5px;
             cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
         }
 
         button:hover {
             background-color: #218838;
+            transform: translateY(-1px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .info-section {
+            background-color: #e9ecef;
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 1.5rem;
+        }
+
+        .info-section h3 {
+            margin: 0 0 0.5rem 0;
+            color: #495057;
+            font-size: 1.1rem;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .info-label {
+            color: #6c757d;
+            font-weight: 500;
+        }
+
+        .info-value {
+            color: #212529;
+            font-weight: 600;
         }
     </style>
 </head>
 <body>
 <section layout:fragment="content">
+    <div class="invoice-form">
+        <h2>Create Invoice</h2>
+        
+        <form th:action="@{/invoice/create}" method="post" th:object="${invoice}">
+            <!-- Hidden fields -->
+            <input type="hidden" th:field="*{provider.id}" />
+            <input type="hidden" th:field="*{client.id}" />
+            
+            <!-- Info sections -->
+            <div class="info-section">
+                <h3>Provider Information</h3>
+                <div class="info-row">
+                    <span class="info-label">Name:</span>
+                    <span class="info-value" th:text="${invoice.provider.firstName + ' ' + invoice.provider.lastName}"></span>
+                </div>
+            </div>
+            
+            <div class="info-section">
+                <h3>Client Information</h3>
+                <div class="info-row">
+                    <span class="info-label">Name:</span>
+                    <span class="info-value" th:text="${invoice.client.firstName + ' ' + invoice.client.lastName}"></span>
+                </div>
+            </div>
 
-<div class="invoice-form">
-    <h2>Create Invoice</h2>
-    <form th:action="@{/invoice/create}" method="post" th:object="${invoice}">
-        <input type="hidden" th:field="*{provider.id}" />
-        <input type="hidden" th:field="*{client.id}" />
-        <span type="text" th:field="*{client.firstName}" />
-        <span type="text" th:field="*{client.lastName}" />
+            <!-- Invoice details -->
+            <div class="form-group">
+                <label for="description">Description</label>
+                <textarea 
+                    th:field="*{description}" 
+                    id="description" 
+                    rows="3"
+                    placeholder="Enter service description..."
+                    required></textarea>
+            </div>
 
-        <div class="form-group">
-            <label for="description">Description</label>
-            <input type="text" th:field="*{description}" id="description" required />
-        </div>
+            <div class="form-group">
+                <label for="amount">Amount ($)</label>
+                <input 
+                    type="number" 
+                    th:field="*{amount}" 
+                    id="amount" 
+                    step="0.01" 
+                    min="0"
+                    placeholder="Enter amount..."
+                    required />
+            </div>
 
-        <div class="form-group">
-            <label for="amount">Amount</label>
-            <input type="number" th:field="*{amount}" id="amount" step="0.01" required />
-        </div>
+            <div class="form-group">
+                <label for="dateCreated">Date</label>
+                <input 
+                    type="date"
+                    th:field="*{dateCreated}"
+                    id="dateCreated"
+                    th:value="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}"
+                    required />
+            </div>
 
-        <div class="form-group">
-            <label for="dateCreated">Date</label>
-            <input type="date"
-                   id="dateCreated"
-                   th:value="${#dates.format(#dates.createNow(), 'yyyy-MM-dd')}"
-                   readonly />
-        </div>
+            <button type="submit">
+                <i class="fas fa-file-invoice"></i>
+                Generate Invoice
+            </button>
+        </form>
+    </div>
 
-        <button type="submit">Save Invoice</button>
-    </form>
-</div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('dateCreated').value = today;
+            document.getElementById('dateCreated').min = today;
+        });
+    </script>
 </section>
 </body>
 </html>

@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Invoice Details</title>
+    <style>
+        .invoice-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: #fff;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .invoice-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #eee;
+        }
+
+        .company-info {
+            flex: 1;
+        }
+
+        .company-info h1 {
+            color: #2c3e50;
+            margin: 0;
+            font-size: 2rem;
+        }
+
+        .invoice-details {
+            text-align: right;
+        }
+
+        .invoice-details h2 {
+            color: #34495e;
+            margin: 0 0 0.5rem 0;
+        }
+
+        .invoice-date {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+
+        .parties {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+        }
+
+        .party {
+            flex: 1;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 6px;
+            margin: 0 1rem;
+        }
+
+        .party:first-child {
+            margin-left: 0;
+        }
+
+        .party:last-child {
+            margin-right: 0;
+        }
+
+        .party h3 {
+            color: #2c3e50;
+            margin: 0 0 1rem 0;
+            font-size: 1.2rem;
+        }
+
+        .party p {
+            margin: 0.3rem 0;
+            color: #34495e;
+        }
+
+        .invoice-body {
+            margin-bottom: 2rem;
+        }
+
+        .description {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 6px;
+            margin-bottom: 1.5rem;
+        }
+
+        .description h3 {
+            margin: 0 0 1rem 0;
+            color: #2c3e50;
+        }
+
+        .description p {
+            margin: 0;
+            color: #34495e;
+            line-height: 1.6;
+        }
+
+        .amount-section {
+            text-align: right;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 6px;
+        }
+
+        .amount-row {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .amount-label {
+            color: #7f8c8d;
+            font-weight: 500;
+        }
+
+        .amount-value {
+            font-size: 1.5rem;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #2980b9;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background-color: #95a5a6;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #7f8c8d;
+            transform: translateY(-1px);
+        }
+
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            .invoice-container, .invoice-container * {
+                visibility: visible;
+            }
+            .invoice-container {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                box-shadow: none;
+            }
+            .actions {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+<section layout:fragment="content">
+    <div class="invoice-container" id="invoice-content">
+        <div class="invoice-header">
+            <div class="company-info">
+                <h1>INVOICE</h1>
+            </div>
+            <div class="invoice-details">
+                <h2>Invoice #<span th:text="${#strings.substring(invoice.id,0,8)}">12345</span></h2>
+                <div class="invoice-date" th:text="${#temporals.format(invoice.dateCreated, 'MMMM dd, yyyy')}">January 1, 2024</div>
+            </div>
+        </div>
+
+        <div class="parties">
+            <div class="party">
+                <h3>From</h3>
+                <p th:text="${invoice.provider.firstName + ' ' + invoice.provider.lastName}">Provider Name</p>
+                <p th:text="${invoice.provider.username}">provider@email.com</p>
+            </div>
+            <div class="party">
+                <h3>To</h3>
+                <p th:text="${invoice.client.firstName + ' ' + invoice.client.lastName}">Client Name</p>
+                <p th:text="${invoice.client.username}">client@email.com</p>
+            </div>
+        </div>
+
+        <div class="invoice-body">
+            <div class="description">
+                <h3>Description</h3>
+                <p th:text="${invoice.description}">Service description goes here...</p>
+            </div>
+
+            <div class="amount-section">
+                <div class="amount-row">
+                    <span class="amount-label">Total Amount:</span>
+                    <span class="amount-value">$<span th:text="${#numbers.formatDecimal(invoice.amount, 1, 2)}">0.00</span></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="actions">
+            <button onclick="window.print()" class="btn btn-primary">
+                <i class="fas fa-print"></i>
+                Print Invoice
+            </button>
+            <button onclick="downloadPDF()" class="btn btn-primary">
+                <i class="fas fa-download"></i>
+                Download PDF
+            </button>
+            <a th:href="@{/invoices}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i>
+                Back to List
+            </a>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script>
+        function downloadPDF() {
+            const element = document.getElementById('invoice-content');
+            const opt = {
+                margin: 1,
+                filename: 'invoice.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+
+            const actions = element.querySelector('.actions');
+            actions.style.display = 'none';
+
+            html2pdf().set(opt).from(element).save().then(() => {
+                // Show the actions again after PDF generation
+                actions.style.display = 'flex';
+            });
+        }
+    </script>
+</section>
+</body>
+</html>

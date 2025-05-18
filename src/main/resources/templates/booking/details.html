@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <title>Booking Details</title>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .booking-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .booking-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+        .booking-title {
+            font-size: 1.5rem;
+            color: #333;
+            margin: 0;
+        }
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        .status-badge.pending {
+            background-color: #fff3e0;
+            color: #e65100;
+        }
+        .status-badge.accepted {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+        .status-badge.rejected {
+            background-color: #ffebee;
+            color: #c62828;
+        }
+        .booking-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        .info-section {
+            padding: 1.5rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        .info-section h3 {
+            margin: 0 0 1rem 0;
+            color: #555;
+            font-size: 1.1rem;
+        }
+        .user-card {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: white;
+            border-radius: 8px;
+            text-decoration: none;
+            color: inherit;
+            transition: transform 0.2s;
+        }
+        .user-card:hover {
+            transform: translateY(-2px);
+        }
+        .user-picture {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            overflow: hidden;
+            background: #eee;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .user-picture img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .user-picture i {
+            font-size: 1.5rem;
+            color: #aaa;
+        }
+        .user-info {
+            flex: 1;
+        }
+        .user-info h4 {
+            margin: 0 0 0.25rem 0;
+            color: #333;
+        }
+        .user-info p {
+            margin: 0;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        .detail-item i {
+            color: #666;
+            width: 20px;
+        }
+        .detail-item span {
+            color: #333;
+        }
+        .description-section {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        .description-section h3 {
+            margin: 0 0 1rem 0;
+            color: #555;
+            font-size: 1.1rem;
+        }
+        .description-section p {
+            margin: 0;
+            color: #666;
+            line-height: 1.5;
+        }
+        .actions-section {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            border: none;
+            font-weight: 500;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+        }
+        .btn:hover {
+            transform: translateY(-1px);
+        }
+        .btn-accept {
+            background-color: #2e7d32;
+            color: white;
+        }
+        .btn-reject {
+            background-color: #c62828;
+            color: white;
+        }
+        .btn-cancel {
+            background-color: #616161;
+            color: white;
+        }
+        .connection-link {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #e8f5e9;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .connection-link i {
+            color: #2e7d32;
+        }
+        .connection-link a {
+            color: #2e7d32;
+            text-decoration: none;
+            word-break: break-all;
+        }
+        .connection-link-input {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 100%;
+        }
+        .warning-message {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #fff3e0;
+            border-radius: 4px;
+            color: #e65100;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .modal.show {
+            display: flex;
+        }
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            max-width: 500px;
+            width: 90%;
+        }
+        .modal-header {
+            margin-bottom: 1rem;
+        }
+        .modal-footer {
+            margin-top: 1rem;
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+        }
+    </style>
+</head>
+<body>
+<section layout:fragment="content">
+    <div class="booking-container">
+        <div class="booking-header">
+            <h1 class="booking-title">Booking Details</h1>
+            <span th:class="'status-badge ' + ${#strings.toLowerCase(bookingResponse.status.name())}">
+                <i th:class="${bookingResponse.status.name() == 'ACCEPTED'} ? 'fas fa-check-circle' : (${bookingResponse.status.name() == 'PENDING'} ? 'fas fa-clock' : 'fas fa-times-circle')"></i>
+                <span th:text="${bookingResponse.status.name()}">Status</span>
+            </span>
+        </div>
+
+        <div class="booking-info">
+            <div class="info-section">
+                <h3>Client</h3>
+                <a th:href="@{'/client/by-username/' + ${bookingResponse.clientUsername}}" class="user-card">
+                    <div class="user-picture">
+                        <img th:if="${bookingResponse.clientProfilePicture != null}" 
+                             th:src="@{'/profile-pictures/' + ${bookingResponse.clientProfilePicture}}"
+                             alt="Client Picture" />
+                        <i th:if="${bookingResponse.clientProfilePicture == null}" class="fas fa-user"></i>
+                    </div>
+                    <div class="user-info">
+                        <h4 th:text="${bookingResponse.clientUsername}">Client Name</h4>
+                        <p>Client</p>
+                    </div>
+                </a>
+            </div>
+
+            <div class="info-section">
+                <h3>Provider</h3>
+                <a th:href="@{'/provider/by-username/' + ${bookingResponse.providerUsername}}" class="user-card">
+                    <div class="user-picture">
+                        <img th:if="${bookingResponse.providerProfilePicture != null}" 
+                             th:src="@{'/profile-pictures/' + ${bookingResponse.providerProfilePicture}}"
+                             alt="Provider Picture" />
+                        <i th:if="${bookingResponse.providerProfilePicture == null}" class="fas fa-user"></i>
+                    </div>
+                    <div class="user-info">
+                        <h4 th:text="${bookingResponse.providerUsername}">Provider Name</h4>
+                        <p>Provider</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <div class="details-grid">
+            <div class="detail-item">
+                <i class="fas fa-calendar"></i>
+                <span th:text="${#temporals.format(bookingResponse.bookingDetails.date, 'dd MMM yyyy')}">Date</span>
+            </div>
+            <div class="detail-item">
+                <i class="fas fa-clock"></i>
+                <span th:text="${bookingResponse.bookingDetails.startTime} + ' - ' + ${bookingResponse.bookingDetails.endTime}">Time</span>
+            </div>
+            <div class="detail-item">
+                <i th:class="${bookingResponse.bookingType == 'ONLINE'} ? 'fas fa-video' : 'fas fa-map-marker-alt'"></i>
+                <span th:text="${bookingResponse.bookingType}">Type</span>
+            </div>
+            <div class="detail-item" th:if="${bookingResponse.bookingDetails.location}">
+                <i class="fas fa-map-marker-alt"></i>
+                <span th:text="${bookingResponse.bookingDetails.location}">Location</span>
+            </div>
+        </div>
+
+        <div class="description-section">
+            <h3>Description</h3>
+            <p th:text="${bookingResponse.bookingDetails.description}">Description</p>
+        </div>
+
+        <!-- Connection Link Section for Online Bookings -->
+        <div class="description-section" th:if="${bookingResponse.bookingType == 'ONLINE' && bookingResponse.status.name() == 'ACCEPTED' && bookingResponse.bookingDetails.connectionLink != null}">
+            <h3>Connection Link</h3>
+            <div class="connection-link">
+                <i class="fas fa-video"></i>
+                <a th:href="${bookingResponse.bookingDetails.connectionLink}" target="_blank" 
+                   th:text="${bookingResponse.bookingDetails.connectionLink}">Link</a>
+            </div>
+        </div>
+
+        <!-- Actions Section -->
+        <div class="actions-section" th:if="${bookingResponse.status.name() == 'PENDING' || bookingResponse.status.name() == 'ACCEPTED'}">
+            <!-- Provider Actions -->
+            <div th:if="${authentication.getName() == bookingResponse.providerUsername && bookingResponse.status.name() == 'PENDING'}">
+                <button class="btn btn-accept" onclick="showAcceptModal()">
+                    <i class="fas fa-check"></i>
+                    Accept
+                </button>
+                <button class="btn btn-reject" onclick="rejectBooking()">
+                    <i class="fas fa-times"></i>
+                    Reject
+                </button>
+            </div>
+
+            <!-- Client Actions -->
+            <div th:if="${authentication.getName() == bookingResponse.clientUsername}">
+                <button class="btn btn-cancel" onclick="cancelBooking()">
+                    <i class="fas fa-ban"></i>
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Accept Booking Modal -->
+    <div id="acceptModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Accept Booking</h3>
+            </div>
+            <div th:if="${bookingResponse.bookingType == 'ONLINE'}">
+                <p>Add a connection link for the online meeting (optional):</p>
+                <input type="text" id="connectionLink" class="connection-link-input" 
+                       placeholder="Enter meeting link (e.g., Zoom, Google Meet)">
+                <div class="warning-message" id="linkWarning" style="display: none;">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span>No connection link provided. You can add it later.</span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" onclick="hideAcceptModal()">Cancel</button>
+                <button class="btn btn-accept" onclick="acceptBooking()">Accept</button>
+            </div>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        const bookingId = /*[[${bookingResponse.id}]]*/ '';
+        
+        function showAcceptModal() {
+            document.getElementById('acceptModal').classList.add('show');
+        }
+
+        function hideAcceptModal() {
+            document.getElementById('acceptModal').classList.remove('show');
+            document.getElementById('linkWarning').style.display = 'none';
+        }
+
+        async function acceptBooking() {
+            const connectionLink = document.getElementById('connectionLink')?.value;
+            const response = await fetch(`/booking/${bookingId}/accept`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ connectionLink }),
+            });
+
+            if (response.ok) {
+                window.location.reload();
+            }
+        }
+
+        async function rejectBooking() {
+            if (!confirm('Are you sure you want to reject this booking?')) return;
+
+            const response = await fetch(`/booking/${bookingId}/reject`, {
+                method: 'POST',
+            });
+
+            if (response.ok) {
+                window.location.reload();
+            }
+        }
+
+        async function cancelBooking() {
+            if (!confirm('Are you sure you want to cancel this booking?')) return;
+
+            const response = await fetch(`/booking/${bookingId}/cancel`, {
+                method: 'POST',
+            });
+
+            if (response.ok) {
+                window.location.reload();
+            }
+        }
+
+        if (document.getElementById('connectionLink')) {
+            document.getElementById('connectionLink').addEventListener('input', function() {
+                document.getElementById('linkWarning').style.display = 
+                    this.value.trim() === '' ? 'flex' : 'none';
+            });
+        }
+    </script>
+</section>
+</body>
+</html>

@@ -2,20 +2,23 @@ package unibuc.SkillLink.controllers;
 
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import unibuc.SkillLink.DTOs.ReviewDto;
+import unibuc.SkillLink.DTOs.providers.UpdateRateRequest;
 import unibuc.SkillLink.abstractions.IMediator;
+import unibuc.SkillLink.annotations.Authorized;
 import unibuc.SkillLink.annotations.SetRoles;
 import unibuc.SkillLink.commands.GetCurrentUserCommand;
+import unibuc.SkillLink.commands.clients.GetClientCommand;
 import unibuc.SkillLink.commands.providers.*;
 import unibuc.SkillLink.models.*;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -30,33 +33,36 @@ public class ProvidersController {
         return "provider/create";
     }
 
+    @Authorized(authority = "CLIENT")
     @GetMapping("/providers")
-    @SetRoles
     public String getAllProviders(Model model, Authentication authentication) {
         var providers = mediator.handle(new GetProvidersCommand());
         model.addAttribute("providers", providers);
         model.addAttribute("authentication", authentication);
+
         return "provider/list";
     }
 
+    @SetRoles
+    @Transactional
+    @GetMapping("/provider/by-username/{username}")
+    public String getByUsername(@PathVariable String username, Model model, Authentication authentication) {
+        var provider = mediator.handle(new GetProviderCommand(username));
+        model.addAttribute("user", provider);
+        model.addAttribute("authentication", authentication);
+        model.addAttribute("reviews", getReviews(provider));
+        return "provider/public-profile";
+    }
 
     @GetMapping("/provider/{id}")
     @SetRoles
     @Transactional
     public String getProvider(@PathVariable UUID id, Model model,Authentication authentication) {
         var provider = mediator.handle(new GetProviderCommand(id));
-        List<ReviewDto> reviewDtos = provider.getReviews().stream()
-                .map(review -> new ReviewDto(
-                        review.getContent(),
-                        review.getStars(),
-                        review.getClient() != null ? review.getClient().getUsername() : "Unknown",
-                        review.getId()
-                ))
-                .collect(Collectors.toList());
 
         model.addAttribute("user", provider);
         model.addAttribute("authentication", authentication);
-        model.addAttribute("reviews", reviewDtos);
+        model.addAttribute("reviews", getReviews(provider));
         return "provider/public-profile";
     }
 
@@ -64,7 +70,7 @@ public class ProvidersController {
     public String createProvider(@ModelAttribute Provider provider, Model model) {
         var createdProvider = mediator.handle(new CreateProviderCommand(provider));
         model.addAttribute("provider", createdProvider);
-        model.addAttribute("newSlot", new AvailabilitySlot());
+        model.addAttribute("newSlot", new BookingDetails());
 
         return "/profile";
     }
@@ -98,6 +104,33 @@ public class ProvidersController {
         return "redirect:/profile";
     }
 
+    @PostMapping("/provider/{id}/rate")
+    public ResponseEntity<String> updateRate(@PathVariable UUID id, @RequestBody UpdateRateRequest request, Authentication auth) {
+        AppUser currentUser = mediator.handle(new GetCurrentUserCommand(auth));
+
+        if (!(currentUser instanceof Provider provider) || !provider.getId().equals(id)) {
+            return ResponseEntity.status(403).body("Operation not permitted");
+        }
+
+        try {
+            provider.setRate(request.getRate());
+            mediator.handle(new EditProviderCommand(provider));
+            return ResponseEntity.ok("Rate updated successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Failed to update rate: " + e.getMessage());
+        }
+    }
+
+    private List<ReviewDto> getReviews(Provider provider){
+        return provider.getReviews().stream()
+                .map(review -> new ReviewDto(
+                        review.getContent(),
+                        review.getStars(),
+                        review.getClient() != null ? review.getClient().getUsername() : "Unknown",
+                        review.getId()
+                ))
+                .collect(Collectors.toList());
+    }
 
 }
 

@@ -1,7 +1,6 @@
 package unibuc.SkillLink.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -35,6 +34,13 @@ public class ClientsController {
         return "client/list";
     }
 
+    @GetMapping("/client/by-username/{username}")
+    public String getByUsername(Model model, @PathVariable String username) {
+        var client = mediator.handle(new GetClientCommand(username));
+        model.addAttribute("user", client);
+        return "client/public-profile";
+    }
+
     @GetMapping("/client/{id}")
     public String getClient(@PathVariable UUID id, Model model) {
         var client = mediator.handle(new GetClientCommand(id));
@@ -65,7 +71,6 @@ public class ClientsController {
             return "error";
         }
         mediator.handle(new DeleteClientCommand(id));
-//         return "redirect:/index";
         return "index";
     }
 

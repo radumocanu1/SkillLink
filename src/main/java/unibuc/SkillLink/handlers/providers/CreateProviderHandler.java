@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import unibuc.SkillLink.abstractions.IHandler;
 import unibuc.SkillLink.commands.providers.CreateProviderCommand;
-import unibuc.SkillLink.models.Calendar;
 import unibuc.SkillLink.models.Provider;
 import unibuc.SkillLink.repositories.ProvidersRepository;
 
@@ -16,9 +15,6 @@ public class CreateProviderHandler implements IHandler<CreateProviderCommand, Pr
 
     public Provider handle(CreateProviderCommand createProviderCommand) {
         Provider provider = createProviderCommand.getProvider();
-        Calendar calendar = new Calendar();
-        calendar.setProvider(provider);
-        provider.setCalendar(calendar);
         return providersRepository.save(provider);
     }
 }

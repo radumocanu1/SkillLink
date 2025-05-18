@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import unibuc.SkillLink.exceptions.NotFoundException;
+import unibuc.SkillLink.exceptions.UsersNotLinkedException;
 
 @ControllerAdvice
 public class ExceptionMiddleware {
@@ -15,5 +16,12 @@ public class ExceptionMiddleware {
         model.addAttribute("entityName", ex.getEntityName());
         model.addAttribute("id", ex.getId());
         return "notFound";
+    }
+    @ResponseStatus(HttpStatus.BAD_REQUEST)  // 400
+    @ExceptionHandler(UsersNotLinkedException.class)
+    public String handleUsersNotLinkedException(UsersNotLinkedException ex, Model model) {
+        model.addAttribute("message", ex.getMessage());
+        model.addAttribute("status", HttpStatus.BAD_REQUEST.value());
+        return "error";
     }
 }

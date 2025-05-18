@@ -22,11 +22,7 @@ import unibuc.SkillLink.models.Client;
 import unibuc.SkillLink.models.Invoice;
 import unibuc.SkillLink.models.Provider;
 
-
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.util.Date;
-import java.util.Locale;
 import java.util.UUID;
 
 @Controller
@@ -35,7 +31,7 @@ public class InvoiceController {
     IMediator mediator;
 
     @GetMapping("/invoice/create")
-    public String getCreateInvoice(@RequestParam("providerId") UUID providerId,
+    public String CreateInvoice(@RequestParam("providerId") UUID providerId,
                                    @RequestParam("clientId") UUID clientId,
                                    Model model) {
         Provider provider = mediator.handle(new GetProviderCommand(providerId));
@@ -44,6 +40,7 @@ public class InvoiceController {
         Invoice invoice = new Invoice();
         invoice.setProvider(provider);
         invoice.setClient(client);
+        invoice.setDateCreated(LocalDate.now());
 
         model.addAttribute("invoice", invoice);
         return "invoice/create";
@@ -56,18 +53,19 @@ public class InvoiceController {
         return "invoice/show";
     }
 
-//    @PostMapping("/invoice/{id}")
-//    public String editInvoice(@ModelAttribute Invoice invoice, Model model) {
-//        var createdInvoice = mediator.handle(new CreateInvoiceCommand(invoice));
-//        model.addAttribute("invoice", createdInvoice);
-//        return "invoice/show";
-//    }
-
     @GetMapping("/invoices")
     @SetRoles
     public String getAllInvoices(@RequestParam(required = false) UUID clientId,
                                  @RequestParam(required = false) UUID providerId,
                                  Model model, Authentication authentication) {
+        AppUser currentUser = mediator.handle(new GetCurrentUserCommand(authentication));
+        
+        if (currentUser instanceof Provider provider) {
+            providerId = provider.getId();
+        } else if (currentUser instanceof Client client) {
+            clientId = client.getId();
+        }
+        
         var invoices = mediator.handle(new GetInvoicesCommand(clientId, providerId));
         model.addAttribute("invoices", invoices);
         model.addAttribute("authentication", authentication);
@@ -76,7 +74,16 @@ public class InvoiceController {
 
     @PostMapping("/invoice/create")
     public String createInvoice(@ModelAttribute Invoice invoice, Model model, Authentication authentication) {
-        invoice.setDateCreated(LocalDate.now());
+        Provider provider = mediator.handle(new GetProviderCommand(invoice.getProvider().getId()));
+        Client client = mediator.handle(new GetClientCommand(invoice.getClient().getId()));
+        
+        invoice.setProvider(provider);
+        invoice.setClient(client);
+        
+        if (invoice.getDateCreated() == null) {
+            invoice.setDateCreated(LocalDate.now());
+        }
+        
         var newInvoice = mediator.handle(new CreateInvoiceCommand(invoice));
         model.addAttribute("invoice", newInvoice);
         return "redirect:/invoices";

@@ -5,9 +5,11 @@
     <header>
         <a href="/" style="text-decoration: none; color: inherit;">
             <strong>SkillLink</strong>
-        </a>        <nav>
-            <a href="/providers">Providers</a>
-            <a id = 'invoice-link' href="/invoices" style="display: none;">My invoices</a>
+        </a>        
+        <nav>
+            <a id="providers-link" href="/providers" style="display: none;">Providers</a>
+            <a id="bookings-link" href="/bookings" style="display: none;">My Bookings</a>
+            <a id="invoice-link" href="/invoices" style="display: none;">My invoices</a>
             <a id="profile-link" href="/profile" style="display: none;">My Profile</a>
             <a id="logout-link" href="/logout" style="display: none;">Log Out</a>
             <a id="login-link" href="/login" style="display: none;">Sign In</a>
@@ -17,20 +19,28 @@
     <script>
         fetch('/authenticated')
             .then(response => response.json())
-            .then(isAuthenticated => {
-                document.getElementById('logout-link').style.display = isAuthenticated ? 'inline' : 'none';
-                document.getElementById('invoice-link').style.display = isAuthenticated ? 'inline' : 'none';
-                document.getElementById('login-link').style.display = isAuthenticated ? 'none' : 'inline';
-                document.getElementById('profile-link').style.display = isAuthenticated ? 'inline' : 'none';
+            .then(authResponse => {
+                const isAuthenticated = authResponse.authenticated;
+                const userRole = authResponse.authority;
 
-                console.log(isAuthenticated)
+                document.getElementById('logout-link').style.display = isAuthenticated ? 'inline' : 'none';
+                document.getElementById('profile-link').style.display = isAuthenticated ? 'inline' : 'none';
+                document.getElementById('login-link').style.display = isAuthenticated ? 'none' : 'inline';
+                document.getElementById('bookings-link').style.display = isAuthenticated ? 'inline' : 'none';
+
+                if (isAuthenticated) {
+                    document.getElementById('invoice-link').style.display = 'inline';
+                    if (userRole === 'CLIENT') {
+                        document.getElementById('providers-link').style.display = 'inline';
+                    } else if (userRole === 'PROVIDER') {
+                        document.getElementById('providers-link').style.display = 'none';
+                    }
+                }
             })
             .catch(err => {
                 console.error('Failed to check authentication:', err);
             });
     </script>
-
-
 </div>
 </body>
 </html>

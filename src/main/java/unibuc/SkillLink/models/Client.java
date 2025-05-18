@@ -1,7 +1,6 @@
 package unibuc.SkillLink.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -24,6 +23,9 @@ public class Client extends BaseModel<UUID> implements AppUser {
     @Getter
     @Setter
     String username;
+    @Getter
+    @Setter
+    String profilePicture;
 
     @ManyToMany
     @JsonIgnore
@@ -35,7 +37,15 @@ public class Client extends BaseModel<UUID> implements AppUser {
     )
     Set<Provider> providers = new HashSet<>();
 
+    @OneToMany(mappedBy = "client")
+    private Set<Booking> bookings;
+
     public void addProvider(Provider p) {
         providers.add(p);
+    }
+
+    @Override
+    public Set<Booking> getBookings() {
+        return bookings;
     }
 }
