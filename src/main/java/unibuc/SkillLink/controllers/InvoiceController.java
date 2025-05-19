@@ -16,7 +16,7 @@ import unibuc.SkillLink.commands.invoices.GetInvoiceCommand;
 import unibuc.SkillLink.commands.invoices.GetInvoicesCommand;
 import unibuc.SkillLink.commands.providers.DeleteProviderCommand;
 import unibuc.SkillLink.commands.providers.GetProviderCommand;
-import unibuc.SkillLink.commands.providers.GetProvidersCommand;
+import org.springframework.data.domain.Sort;
 import unibuc.SkillLink.models.AppUser;
 import unibuc.SkillLink.models.Client;
 import unibuc.SkillLink.models.Invoice;
@@ -57,6 +57,8 @@ public class InvoiceController {
     @SetRoles
     public String getAllInvoices(@RequestParam(required = false) UUID clientId,
                                  @RequestParam(required = false) UUID providerId,
+                                 @RequestParam(defaultValue = "dateCreated") String sort,
+                                 @RequestParam(defaultValue = "desc") String direction,
                                  Model model, Authentication authentication) {
         AppUser currentUser = mediator.handle(new GetCurrentUserCommand(authentication));
         
@@ -65,8 +67,8 @@ public class InvoiceController {
         } else if (currentUser instanceof Client client) {
             clientId = client.getId();
         }
-        
-        var invoices = mediator.handle(new GetInvoicesCommand(clientId, providerId));
+        Sort sorting = Sort.by(Sort.Direction.fromString(direction), sort);
+        var invoices = mediator.handle(new GetInvoicesCommand(clientId, providerId, sorting));
         model.addAttribute("invoices", invoices);
         model.addAttribute("authentication", authentication);
         return "invoice/list";

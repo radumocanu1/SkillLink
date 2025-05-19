@@ -1,6 +1,7 @@
 package unibuc.SkillLink.handlers.invoices;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import unibuc.SkillLink.abstractions.IHandler;
 import unibuc.SkillLink.commands.invoices.GetInvoicesCommand;
@@ -22,13 +23,14 @@ public class GetInvoicesHandler implements IHandler<GetInvoicesCommand, List<Inv
     public List<Invoice> handle(GetInvoicesCommand command) {
         UUID clientId = command.getClientId();
         UUID providerId = command.getProviderId();
+        Sort sorting = command.getSort();
 
         if (clientId != null && providerId != null) {
-            return invoiceRepository.findByClientIdAndProviderId(clientId, providerId);
+            return invoiceRepository.findByClientIdAndProviderId(clientId, providerId,sorting);
         } else if (clientId != null) {
-            return invoiceRepository.findByClientId(clientId);
+            return invoiceRepository.findByClientId(clientId,sorting);
         } else if (providerId != null) {
-            return invoiceRepository.findByProviderId(providerId);
+            return invoiceRepository.findByProviderId(providerId,sorting);
         } else {
             return (List<Invoice>) invoiceRepository.findAll();
         }
