@@ -217,6 +217,84 @@
             box-shadow: 0 0 0 1px #6772e5;
         }
 
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 2rem;
+        }
+
+        .modal-content {
+            background: #fff;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 520px;
+            position: relative;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: #1a1f36;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.25rem;
+            cursor: pointer;
+            color: #6c757d;
+            transition: color 0.2s ease;
+        }
+
+        .close-modal:hover {
+            color: #dc3545;
+        }
+
+        .btn-book {
+            background: #28a745;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: background 0.2s ease;
+        }
+
+        .btn-book:hover {
+            background: #218838;
+        }
+
+        /* Optional: animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+
+
         @media (max-width: 768px) {
             .profile-header {
                 flex-direction: column;
@@ -241,7 +319,84 @@
     </style>
 </head>
 <body>
+
+
 <section layout:fragment="content">
+    <!-- New Booking Modal -->
+    <div id="booking-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Book an Appointment</h3>
+                <button type="button" class="close-modal" onclick="closeBookingModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="booking-form" class="booking-form">
+                <div class="form-group">
+                    <label for="booking-date">
+                        <i class="fas fa-calendar"></i>
+                        Select Date
+                    </label>
+                    <input type="date" id="booking-date" class="form-control" required
+                           min="" />
+                </div>
+
+                <div class="form-group">
+                    <label for="booking-time">
+                        <i class="fas fa-clock"></i>
+                        Select Time
+                    </label>
+                    <input type="time" id="booking-time" class="form-control" required />
+                    <div id="time-availability" class="availability-info" style="display: none;">
+                        <i class="fas fa-info-circle"></i>
+                        <span>This time slot is not available</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        <i class="fas fa-hourglass-end"></i>
+                        End Time
+                    </label>
+                    <input type="time" id="booking-end-time" class="form-control" readonly />
+                </div>
+
+                <div class="form-group">
+                    <label for="booking-type">
+                        <i class="fas fa-tag"></i>
+                        Booking Type
+                    </label>
+                    <select id="booking-type" class="form-control" required>
+                        <option value="ONLINE">Online Meeting</option>
+                        <option value="ONSITE">On-site Meeting</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="booking-description">
+                        <i class="fas fa-comment"></i>
+                        Description
+                    </label>
+                    <textarea id="booking-description" class="form-control" rows="3"
+                              maxlength="250" placeholder="Describe what you'd like to discuss..."></textarea>
+                </div>
+
+                <div class="form-group" id="location-group">
+                    <label for="booking-location">
+                        <i class="fas fa-map-marker-alt"></i>
+                        Location
+                    </label>
+                    <input type="text" id="booking-location" class="form-control"
+                           placeholder="Enter meeting location" />
+                </div>
+
+                <button type="submit" class="btn-book">
+                    <i class="fas fa-calendar-check"></i>
+                    Confirm Booking
+                </button>
+            </form>
+        </div>
+    </div>
     <div class="profile-container">
         <!-- Profile Header -->
         <div class="profile-header">
@@ -280,6 +435,16 @@
             </div>
         </div>
 
+        <div id="bookingSection">
+            <div id="bookingInfo" class="info-message" style="display: none;">
+                You need to be linked with this provider to book appointments.
+            </div>
+            <button id="openBookingBtn" onclick="openBookingModal()" class="btn-action btn-primary" style="display: none;">
+                <i class="fas fa-calendar-plus"></i>
+                Book Appointment
+            </button>
+        </div>
+
         <!-- Reviews Section -->
         <div id="reviewSection" class="reviews-section">
             <h3 class="section-title">Reviews</h3>
@@ -292,6 +457,7 @@
             </div>
             
             <div th:each="review : ${reviews}" class="review-item">
+                <input type="hidden" id="reviewIdInput" name="reviewId" th:value="${review.id}" />
                 <div class="review-header">
                     <span class="review-author" th:text="${review.clientUsername}">Client Name</span>
                     <span class="stars-display" th:text="${#strings.repeat('⭐', review.stars)}"></span>
@@ -334,13 +500,16 @@
                 </form>
             </div>
         </div>
+
+
     </div>
 
     <script th:inline="javascript">
         document.addEventListener("DOMContentLoaded", function() {
             const providerUsername = document.getElementById('provider-username').value;
             const clientUsername = document.getElementById('client-username').value;
-            
+
+
             fetch(`/linked?clientUsername=${clientUsername}&providerUsername=${providerUsername}`)
                 .then(response => response.json())
                 .then(isLinked => {
@@ -444,7 +613,7 @@
 
         function saveEdit(button) {
             const reviewItem = button.closest('.review-item');
-            const reviewId = reviewItem.getAttribute('data-review-id');
+            const reviewId = document.getElementById('reviewIdInput').value;
             const content = reviewItem.querySelector('textarea').value;
             const stars = parseInt(reviewItem.querySelector('input[type="number"]').value);
             
@@ -469,7 +638,7 @@
 
         function deleteReview(button) {
             const reviewItem = button.closest('.review-item');
-            const reviewId = reviewItem.getAttribute('data-review-id');
+            const reviewId = document.getElementById('reviewIdInput').value;
             
             if (confirm("Are you sure you want to delete this review?")) {
                 fetch(`/review/${reviewId}`, {
@@ -484,6 +653,111 @@
                     });
             }
         }
+
+
+        function openBookingModal() {
+            document.getElementById('booking-modal').style.display = 'block';
+        }
+
+        function closeBookingModal() {
+            document.getElementById('booking-modal').style.display = 'none';
+        }
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const providerUsername = document.getElementById('provider-username').value;
+            const clientUsername = document.getElementById('client-username').value;
+
+            fetch(`/linked?clientUsername=${clientUsername}&providerUsername=${providerUsername}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data) {
+                        document.getElementById('openBookingBtn').style.display = 'block';
+                    } else {
+                        document.getElementById('bookingInfo').style.display = 'block';
+                    }
+                });
+
+            const today = new Date().toISOString().split('T')[0];
+            const dateInput = document.getElementById('booking-date');
+            dateInput.min = today;
+            dateInput.value = today;
+
+            const timeInput = document.getElementById('booking-time');
+            timeInput.addEventListener('change', function() {
+                const selectedDate = dateInput.value;
+                const selectedTime = this.value;
+
+                const [hours, minutes] = selectedTime.split(':');
+                const endTime = new Date();
+                endTime.setHours(parseInt(hours) + 1);
+                endTime.setMinutes(minutes);
+
+                const endTimeStr = endTime.getHours().toString().padStart(2, '0') + ':' +
+                    endTime.getMinutes().toString().padStart(2, '0');
+                document.getElementById('booking-end-time').value = endTimeStr;
+
+                checkAvailability(selectedDate, selectedTime, endTimeStr);
+            });
+
+            function checkAvailability(date, startTime, endTime) {
+                fetch(`/booking/check-availability?providerUsername=${providerUsername}&date=${date}&startTime=${startTime}&endTime=${endTime}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const availabilityInfo = document.getElementById('time-availability');
+                        const submitButton = document.querySelector('.btn-book');
+
+                        if (data.available) {
+                            availabilityInfo.style.display = 'none';
+                            submitButton.disabled = false;
+                        } else {
+                            availabilityInfo.style.display = 'block';
+                            submitButton.disabled = true;
+                        }
+                    });
+            }
+
+            document.getElementById('booking-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                const bookingData = {
+                    providerUsername: providerUsername,
+                    bookingType: document.getElementById('booking-type').value,
+                    bookingDetails: {
+                        date: document.getElementById('booking-date').value,
+                        startTime: document.getElementById('booking-time').value,
+                        endTime: document.getElementById('booking-end-time').value,
+                        description: document.getElementById('booking-description').value,
+                        location: document.getElementById('booking-location').value || null
+                    }
+                };
+
+                fetch('/booking', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(bookingData)
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            alert('Booking request sent successfully!');
+                            closeBookingModal();
+                            window.location.reload();
+                        } else {
+                            alert('Error creating booking. Please try again.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Error creating booking. Please try again.');
+                    });
+            });
+        });
+
+
+
     </script>
 </section>
 </body>

@@ -43,7 +43,7 @@ public class ReviewsController {
         return ResponseEntity.ok("Review submitted");
     }
 
-    @PostMapping("/review/{id}")
+    @PutMapping("/review/{id}")
     public ResponseEntity<?> updateReview(@PathVariable UUID id, @RequestBody ReviewDto dto,Authentication auth) {
         AppUser currentUser = mediator.handle(new GetCurrentUserCommand(auth));
 
