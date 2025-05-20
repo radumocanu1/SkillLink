@@ -1,16 +1,16 @@
 package unibuc.SkillLink.controllers;
 
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 import unibuc.SkillLink.DTOs.AuthResponse;
+import unibuc.SkillLink.DTOs.SignupForm;
 import unibuc.SkillLink.abstractions.IMediator;
 import unibuc.SkillLink.commands.RegisterCommand;
 
@@ -27,27 +27,37 @@ public class AuthController {
 
     @GetMapping("/signup/client")
     public String signupClient(Model model) {
-        model.addAttribute("userType", "client");
+        SignupForm form = new SignupForm();
+        form.setUserType("client");
+        model.addAttribute("signupForm", form);
         return "auth/signup";
     }
 
     @GetMapping("/signup/provider")
     public String signupProvider(Model model) {
-        model.addAttribute("userType", "provider");
+        SignupForm form = new SignupForm();
+        form.setUserType("provider");
+        model.addAttribute("signupForm", form);
         return "auth/signup";
     }
 
     @PostMapping("/signup")
     @Transactional
-    public String processSignup(@RequestParam String username,
-                                @RequestParam String password,
-                                @RequestParam String firstName,
-                                @RequestParam String lastName,
-                                @RequestParam String userType) {
+    public String processSignup(@ModelAttribute @Valid SignupForm signupForm,
+                                BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return "auth/signup";
+        }
 
         mediator.handle(new RegisterCommand(
-                username, password, firstName, lastName, userType
+                signupForm.getUsername(),
+                signupForm.getPassword(),
+                signupForm.getFirstName(),
+                signupForm.getLastName(),
+                signupForm.getUserType()
         ));
+
         return "redirect:/login?success";
     }
 

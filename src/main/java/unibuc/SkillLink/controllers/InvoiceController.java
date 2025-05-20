@@ -1,9 +1,12 @@
 package unibuc.SkillLink.controllers;
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import unibuc.SkillLink.abstractions.IMediator;
 import unibuc.SkillLink.annotations.SetRoles;
@@ -75,17 +78,22 @@ public class InvoiceController {
     }
 
     @PostMapping("/invoice/create")
-    public String createInvoice(@ModelAttribute Invoice invoice, Model model, Authentication authentication) {
+    public String createInvoice(@ModelAttribute("invoice") @Valid Invoice invoice, BindingResult bindingResult,Model model,  Authentication authentication) {
         Provider provider = mediator.handle(new GetProviderCommand(invoice.getProvider().getId()));
         Client client = mediator.handle(new GetClientCommand(invoice.getClient().getId()));
-        
+
         invoice.setProvider(provider);
         invoice.setClient(client);
-        
+
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("invoice", invoice);
+            return "invoice/create";
+        }
+
         if (invoice.getDateCreated() == null) {
             invoice.setDateCreated(LocalDate.now());
         }
-        
+
         var newInvoice = mediator.handle(new CreateInvoiceCommand(invoice));
         model.addAttribute("invoice", newInvoice);
         return "redirect:/invoices";

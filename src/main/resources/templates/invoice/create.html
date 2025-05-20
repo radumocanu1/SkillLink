@@ -155,37 +155,39 @@
                 </div>
             </div>
 
-            <!-- Invoice details -->
             <div class="form-group">
                 <label for="description">Description</label>
-                <textarea 
-                    th:field="*{description}" 
-                    id="description" 
-                    rows="3"
-                    placeholder="Enter service description..."
-                    required></textarea>
+                <textarea
+                        th:field="*{description}"
+                        id="description"
+                        rows="3"
+                        placeholder="Enter service description..."
+                        required></textarea>
+                <div th:if="${#fields.hasErrors('description')}" th:errors="*{description}" class="error-message"></div>
             </div>
 
+
             <div class="form-group">
-                <label for="amount">Amount ($)</label>
-                <input 
-                    type="number" 
-                    th:field="*{amount}" 
-                    id="amount" 
-                    step="0.01" 
-                    min="0"
-                    placeholder="Enter amount..."
-                    required />
+                <label for="amount">Amount</label>
+                <input
+                        type="number"
+                        th:field="*{amount}"
+                        id="amount"
+                        step="0.01"
+                        min="0"
+                        placeholder="Enter amount"
+                        required />
+                <div th:if="${#fields.hasErrors('amount')}" th:errors="*{amount}" class="error-message"></div>
             </div>
 
             <div class="form-group">
                 <label for="dateCreated">Date</label>
-                <input 
-                    type="date"
-                    th:field="*{dateCreated}"
-                    id="dateCreated"
-                    th:value="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}"
-                    required />
+                <input
+                        type="date"
+                        id="dateCreated"
+                        th:field="*{dateCreated}"
+                        readonly
+                />
             </div>
 
             <button type="submit">

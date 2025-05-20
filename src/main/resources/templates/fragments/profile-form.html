@@ -108,43 +108,7 @@
             </div>
         </form>
     </div>
-    
-    <!-- Professional Rate Section (Only for providers) -->
-    <div class="rate-section" th:if="${userType == 'provider'}">
-        <h3>
-            <i class="fas fa-dollar-sign"></i>
-            Professional Rate
-        </h3>
-        <p class="text-muted">Set your hourly rate for professional services</p>
-        
-        <form th:action="@{'/provider/' + ${user.id} + '/rate'}" 
-              method="post" 
-              id="rateForm" 
-              onsubmit="return updateRate(event)">
-            <div class="rate-input-group">
-                <span class="currency-symbol">$</span>
-                <input type="number" 
-                       id="rateInput" 
-                       name="rate" 
-                       th:value="${user.rate}" 
-                       class="rate-input" 
-                       min="0" 
-                       step="0.01" 
-                       required />
-                <span class="text-muted">/hour</span>
-            </div>
-            
-            <button type="submit" class="rate-save-btn">
-                <i class="fas fa-save"></i>
-                Update Rate
-            </button>
-            
-            <div id="rateFeedback" class="rate-feedback">
-                <i class="fas"></i>
-                <span></span>
-            </div>
-        </form>
-    </div>
+
     
     <!-- Delete Account Form -->
     <div class="form-section">

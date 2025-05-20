@@ -105,9 +105,7 @@
 <body>
 <section layout:fragment="content">
     <div class="profile-container">
-        <!-- Profile Header with Picture -->
         <div class="profile-header">
-            <!-- Profile Picture Component -->
             <div th:replace="fragments/profile-picture :: profile-picture(${user}, 'provider')"></div>
 
             <div class="profile-info">
@@ -116,16 +114,13 @@
             </div>
         </div>
 
-        <!-- Create Ad Button -->
         <a th:href="@{/ads/create}" class="btn-create-ad">
             <i class="fas fa-plus"></i>
             Create New Ad
         </a>
 
-        <!-- Profile Form Component -->
         <div th:replace="fragments/profile-form :: profile-form(${user}, 'provider')"></div>
 
-        <!-- Clients Section -->
         <div class="client-section">
             <h3>My Clients</h3>
             <div class="client-list" th:if="${user.clients != null and !user.clients.isEmpty()}">

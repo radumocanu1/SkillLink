@@ -17,15 +17,25 @@
 </head>
 <body>
 <div class="container">
-    <h2 th:text="'Sign Up as ' + ${userType}"></h2>
-    <form th:action="@{/signup}" method="post">
-        <input type="text" name="firstName" placeholder="First Name" required />
-        <input type="text" name="lastName" placeholder="Last Name" required />
-        <input type="text" name="username" placeholder="Username" required />
-        <input type="password" name="password" placeholder="Password" required />
-        <input type="hidden" name="userType" th:value="${userType}" />
+    <h2 th:text="'Sign Up as ' + ${signupForm.userType}"></h2>
+    <form th:action="@{/signup}" th:object="${signupForm}" method="post">
+        <input type="text" th:field="*{firstName}" placeholder="First Name" />
+        <div th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}"></div>
+
+        <input type="text" th:field="*{lastName}" placeholder="Last Name" />
+        <div th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}"></div>
+
+        <input type="text" th:field="*{username}" placeholder="Username" />
+        <div th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></div>
+
+        <input type="password" th:field="*{password}" placeholder="Password" />
+        <div th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+
+        <input type="hidden" th:field="*{userType}" />
+
         <button type="submit">Create Account</button>
     </form>
+
 </div>
 </body>
 </html>
