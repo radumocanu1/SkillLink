@@ -7,7 +7,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import unibuc.SkillLink.DTOs.ads.CreateAdRequest;
 import unibuc.SkillLink.abstractions.Mediator;
 import unibuc.SkillLink.annotations.Authorized;
