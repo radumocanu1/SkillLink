@@ -1,0 +1,15 @@
+FROM mysql:8.0
+
+# Set environment variables
+ENV MYSQL_ROOT_PASSWORD=admin
+ENV MYSQL_DATABASE=SkillLink
+ENV MYSQL_USER=app
+ENV MYSQL_PASSWORD=admin
+
+# Copy initialization scripts
+COPY ../src/main/resources/db-seed/ /docker-entrypoint-initdb.d/
+
+# Expose MySQL port
+EXPOSE 3306
+
+# Use the default MySQL entrypoint 
